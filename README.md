@@ -9,16 +9,11 @@ Additional Documentation Can Be Found Here - https://cryptotrader.org/talib
 
 (Not a full list see the .proj file for a complete list in the (ItemGroup)(Compile) section)
 
-AD                  Chaikin A/D Line
-
-ADOSC               Chaikin A/D Oscillator
-
+AD                  Chaikin A/D Line</br>
+ADOSC               Chaikin A/D Oscillator</br>
 ADX                 Average Directional Movement Index
-
 ADXR                Average Directional Movement Index Rating
-
 APO                 Absolute Price Oscillator
-
 AROON               Aroon
 AROONOSC            Aroon Oscillator
 ATR                 Average True Range
