@@ -6,12 +6,19 @@ Original TA-Lib documentation can be found here - http://ta-lib.org/function.htm
 Additional Documentation Can Be Found Here - https://cryptotrader.org/talib
 
 # This Class Contains the following Technical Indicators 
+
 (Not a full list see the .proj file for a complete list in the (ItemGroup)(Compile) section)
+
 AD                  Chaikin A/D Line
+
 ADOSC               Chaikin A/D Oscillator
+
 ADX                 Average Directional Movement Index
+
 ADXR                Average Directional Movement Index Rating
+
 APO                 Absolute Price Oscillator
+
 AROON               Aroon
 AROONOSC            Aroon Oscillator
 ATR                 Average True Range
