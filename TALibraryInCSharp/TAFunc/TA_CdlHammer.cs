@@ -1,5 +1,5 @@
 using System;
-namespace TALibraryInCSharp
+namespace TALibrary
      {
      public partial class Core
      { 

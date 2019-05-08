@@ -1,34 +1,28 @@
 using System;
-namespace TALibraryInCSharp
-     {
-     public partial class Core
-     { 
+namespace TALibrary
+{
+    public partial class Core
+    {
         public static RetCode Add(int startIdx, int endIdx, double[] inReal0, double[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int i = startIdx;
             int outIdx = 0;
-            while (i <= endIdx)
-            {
+            while (i <= endIdx) {
                 outReal[outIdx] = inReal0[i] + inReal1[i];
                 i++;
                 outIdx++;
@@ -39,30 +33,24 @@ namespace TALibraryInCSharp
         }
         public static RetCode Add(int startIdx, int endIdx, float[] inReal0, float[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int i = startIdx;
             int outIdx = 0;
-            while (i <= endIdx)
-            {
+            while (i <= endIdx) {
                 outReal[outIdx] = inReal0[i] + inReal1[i];
                 i++;
                 outIdx++;
@@ -75,5 +63,5 @@ namespace TALibraryInCSharp
         {
             return 0;
         }
-     }
+    }
 }
