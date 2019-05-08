@@ -1,42 +1,34 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Obv(int startIdx, int endIdx, double[] inReal, double[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (inVolume == null)
-            {
+            if (inVolume == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             double prevOBV = inVolume[startIdx];
             double prevReal = inReal[startIdx];
             int outIdx = 0;
-            for (int i = startIdx; i <= endIdx; i++)
-            {
+            for (int i = startIdx; i <= endIdx; i++) {
                 double tempReal = inReal[i];
-                if (tempReal > prevReal)
-                {
+                if (tempReal > prevReal) {
                     prevOBV += inVolume[i];
                 }
-                else if (tempReal < prevReal)
-                {
+                else if (tempReal < prevReal) {
                     prevOBV -= inVolume[i];
                 }
                 outReal[outIdx] = prevOBV;
@@ -49,38 +41,30 @@ namespace TALibrary
         }
         public static RetCode Obv(int startIdx, int endIdx, float[] inReal, float[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (inVolume == null)
-            {
+            if (inVolume == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             double prevOBV = inVolume[startIdx];
             double prevReal = inReal[startIdx];
             int outIdx = 0;
-            for (int i = startIdx; i <= endIdx; i++)
-            {
+            for (int i = startIdx; i <= endIdx; i++) {
                 double tempReal = inReal[i];
-                if (tempReal > prevReal)
-                {
+                if (tempReal > prevReal) {
                     prevOBV += inVolume[i];
                 }
-                else if (tempReal < prevReal)
-                {
+                else if (tempReal < prevReal) {
                     prevOBV -= inVolume[i];
                 }
                 outReal[outIdx] = prevOBV;
@@ -95,5 +79,5 @@ namespace TALibrary
         {
             return 0;
         }
-     }
+    }
 }

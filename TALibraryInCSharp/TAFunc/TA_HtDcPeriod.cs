@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode HtDcPeriod(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double smoothedValue;
@@ -16,30 +16,24 @@ namespace TALibrary
             double[] jI_Even = new double[3];
             double[] jQ_Odd = new double[3];
             double[] jQ_Even = new double[3];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             double rad2Deg = 180.0 / (4.0 * Math.Atan(1.0));
             int lookbackTotal = ((int)Globals.unstablePeriod[6]) + 0x20;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -61,8 +55,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 9;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -131,13 +124,11 @@ namespace TALibrary
             double I1ForEvenPrev2 = 0.0;
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double smoothPeriod = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     break;
                 }
                 double adjustedPrevPeriod = (0.075 * period) + 0.54;
@@ -149,8 +140,7 @@ namespace TALibrary
                 trailingWMAIdx++;
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -188,8 +178,7 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
@@ -197,8 +186,7 @@ namespace TALibrary
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -245,32 +233,26 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 double tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
                 smoothPeriod = (0.33 * period) + (0.67 * smoothPeriod);
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outReal[outIdx] = smoothPeriod;
                     outIdx++;
                 }
@@ -292,30 +274,24 @@ namespace TALibrary
             double[] jI_Even = new double[3];
             double[] jQ_Odd = new double[3];
             double[] jQ_Even = new double[3];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             double rad2Deg = 180.0 / (4.0 * Math.Atan(1.0));
             int lookbackTotal = ((int)Globals.unstablePeriod[6]) + 0x20;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -337,8 +313,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 9;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -407,13 +382,11 @@ namespace TALibrary
             double I1ForEvenPrev2 = 0.0;
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double smoothPeriod = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     break;
                 }
                 double adjustedPrevPeriod = (0.075 * period) + 0.54;
@@ -425,8 +398,7 @@ namespace TALibrary
                 trailingWMAIdx++;
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -464,8 +436,7 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
@@ -473,8 +444,7 @@ namespace TALibrary
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -521,32 +491,26 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 double tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
                 smoothPeriod = (0.33 * period) + (0.67 * smoothPeriod);
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outReal[outIdx] = smoothPeriod;
                     outIdx++;
                 }
@@ -559,5 +523,5 @@ namespace TALibrary
         {
             return (((int)Globals.unstablePeriod[6]) + 0x20);
         }
-     }
+    }
 }

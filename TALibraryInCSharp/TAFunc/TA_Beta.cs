@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Beta(int startIdx, int endIdx, double[] inReal0, double[] inReal1, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double x;
@@ -17,41 +17,32 @@ namespace TALibrary
             double trailing_last_price_y = 0.0;
             double tmp_real = 0.0;
             double n = 0.0;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int nbInitialElementNeeded = optInTimePeriod;
-            if (startIdx < nbInitialElementNeeded)
-            {
+            if (startIdx < nbInitialElementNeeded) {
                 startIdx = nbInitialElementNeeded;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -63,30 +54,24 @@ namespace TALibrary
             last_price_y = trailing_last_price_y;
             trailingIdx++;
             int i = trailingIdx;
-            while (true)
-            {
-                if (i >= startIdx)
-                {
+            while (true) {
+                if (i >= startIdx) {
                     break;
                 }
                 tmp_real = inReal0[i];
-                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08)) {
                     x = (tmp_real - last_price_x) / last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 last_price_x = tmp_real;
                 tmp_real = inReal1[i];
                 i++;
-                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08)) {
                     y = (tmp_real - last_price_y) / last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 last_price_y = tmp_real;
@@ -97,26 +82,21 @@ namespace TALibrary
             }
             int outIdx = 0;
             n = optInTimePeriod;
-            do
-            {
+            do {
                 tmp_real = inReal0[i];
-                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08)) {
                     x = (tmp_real - last_price_x) / last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 last_price_x = tmp_real;
                 tmp_real = inReal1[i];
                 i++;
-                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08)) {
                     y = (tmp_real - last_price_y) / last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 last_price_y = tmp_real;
@@ -125,34 +105,28 @@ namespace TALibrary
                 S_x += x;
                 S_y += y;
                 tmp_real = inReal0[trailingIdx];
-                if ((-1E-08 >= trailing_last_price_x) || (trailing_last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= trailing_last_price_x) || (trailing_last_price_x >= 1E-08)) {
                     x = (tmp_real - trailing_last_price_x) / trailing_last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 trailing_last_price_x = tmp_real;
                 tmp_real = inReal1[trailingIdx];
                 trailingIdx++;
-                if ((-1E-08 >= trailing_last_price_y) || (trailing_last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= trailing_last_price_y) || (trailing_last_price_y >= 1E-08)) {
                     y = (tmp_real - trailing_last_price_y) / trailing_last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 trailing_last_price_y = tmp_real;
                 tmp_real = (n * S_xx) - (S_x * S_x);
-                if ((-1E-08 >= tmp_real) || (tmp_real >= 1E-08))
-                {
+                if ((-1E-08 >= tmp_real) || (tmp_real >= 1E-08)) {
                     outReal[outIdx] = ((n * S_xy) - (S_x * S_y)) / tmp_real;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -180,41 +154,32 @@ namespace TALibrary
             double trailing_last_price_y = 0.0;
             double tmp_real = 0.0;
             double n = 0.0;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int nbInitialElementNeeded = optInTimePeriod;
-            if (startIdx < nbInitialElementNeeded)
-            {
+            if (startIdx < nbInitialElementNeeded) {
                 startIdx = nbInitialElementNeeded;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -226,30 +191,24 @@ namespace TALibrary
             last_price_y = trailing_last_price_y;
             trailingIdx++;
             int i = trailingIdx;
-            while (true)
-            {
-                if (i >= startIdx)
-                {
+            while (true) {
+                if (i >= startIdx) {
                     break;
                 }
                 tmp_real = inReal0[i];
-                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08)) {
                     x = (tmp_real - last_price_x) / last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 last_price_x = tmp_real;
                 tmp_real = inReal1[i];
                 i++;
-                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08)) {
                     y = (tmp_real - last_price_y) / last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 last_price_y = tmp_real;
@@ -260,26 +219,21 @@ namespace TALibrary
             }
             int outIdx = 0;
             n = optInTimePeriod;
-            do
-            {
+            do {
                 tmp_real = inReal0[i];
-                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_x) || (last_price_x >= 1E-08)) {
                     x = (tmp_real - last_price_x) / last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 last_price_x = tmp_real;
                 tmp_real = inReal1[i];
                 i++;
-                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= last_price_y) || (last_price_y >= 1E-08)) {
                     y = (tmp_real - last_price_y) / last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 last_price_y = tmp_real;
@@ -288,34 +242,28 @@ namespace TALibrary
                 S_x += x;
                 S_y += y;
                 tmp_real = inReal0[trailingIdx];
-                if ((-1E-08 >= trailing_last_price_x) || (trailing_last_price_x >= 1E-08))
-                {
+                if ((-1E-08 >= trailing_last_price_x) || (trailing_last_price_x >= 1E-08)) {
                     x = (tmp_real - trailing_last_price_x) / trailing_last_price_x;
                 }
-                else
-                {
+                else {
                     x = 0.0;
                 }
                 trailing_last_price_x = tmp_real;
                 tmp_real = inReal1[trailingIdx];
                 trailingIdx++;
-                if ((-1E-08 >= trailing_last_price_y) || (trailing_last_price_y >= 1E-08))
-                {
+                if ((-1E-08 >= trailing_last_price_y) || (trailing_last_price_y >= 1E-08)) {
                     y = (tmp_real - trailing_last_price_y) / trailing_last_price_y;
                 }
-                else
-                {
+                else {
                     y = 0.0;
                 }
                 trailing_last_price_y = tmp_real;
                 tmp_real = (n * S_xx) - (S_x * S_x);
-                if ((-1E-08 >= tmp_real) || (tmp_real >= 1E-08))
-                {
+                if ((-1E-08 >= tmp_real) || (tmp_real >= 1E-08)) {
                     outReal[outIdx] = ((n * S_xy) - (S_x * S_y)) / tmp_real;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -331,15 +279,13 @@ namespace TALibrary
         }
         public static int BetaLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return optInTimePeriod;
         }
-     }
+    }
 }

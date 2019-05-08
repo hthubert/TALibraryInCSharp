@@ -1,69 +1,55 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode MovingAverageVariablePeriod(int startIdx, int endIdx, double[] inReal, double[] inPeriods, int optInMinPeriod, int optInMaxPeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             int i;
             int tempInt = 0;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (inPeriods == null)
-            {
+            if (inPeriods == null) {
                 return RetCode.BadParam;
             }
-            if (optInMinPeriod == -2147483648)
-            {
+            if (optInMinPeriod == -2147483648) {
                 optInMinPeriod = 2;
             }
-            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0))
-            {
+            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (optInMaxPeriod == -2147483648)
-            {
+            if (optInMaxPeriod == -2147483648) {
                 optInMaxPeriod = 30;
             }
-            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0))
-            {
+            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = MovingAverageLookback(optInMaxPeriod, optInMAType);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
-            if (lookbackTotal > startIdx)
-            {
+            if (lookbackTotal > startIdx) {
                 tempInt = lookbackTotal;
             }
-            else
-            {
+            else {
                 tempInt = startIdx;
             }
-            if (tempInt > endIdx)
-            {
+            if (tempInt > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -71,45 +57,36 @@ namespace TALibrary
             int outputSize = (endIdx - tempInt) + 1;
             double[] localOutputArray = new double[outputSize];
             int[] localPeriodArray = new int[outputSize];
-            for (i = 0; i < outputSize; i++)
-            {
+            for (i = 0; i < outputSize; i++) {
                 tempInt = (int)inPeriods[startIdx + i];
-                if (tempInt < optInMinPeriod)
-                {
+                if (tempInt < optInMinPeriod) {
                     tempInt = optInMinPeriod;
                 }
-                else if (tempInt > optInMaxPeriod)
-                {
+                else if (tempInt > optInMaxPeriod) {
                     tempInt = optInMaxPeriod;
                 }
                 localPeriodArray[i] = tempInt;
             }
             i = 0;
-            while (true)
-            {
-                if (i >= outputSize)
-                {
+            while (true) {
+                if (i >= outputSize) {
                     outBegIdx = startIdx;
                     outNBElement = outputSize;
                     return RetCode.Success;
                 }
                 int curPeriod = localPeriodArray[i];
-                if (curPeriod != 0)
-                {
+                if (curPeriod != 0) {
                     int localNbElement = 0;
                     int localBegIdx = 0;
                     RetCode retCode = MovingAverage(startIdx, endIdx, inReal, curPeriod, optInMAType, ref localBegIdx, ref localNbElement, localOutputArray);
-                    if (retCode != RetCode.Success)
-                    {
+                    if (retCode != RetCode.Success) {
                         outBegIdx = 0;
                         outNBElement = 0;
                         return retCode;
                     }
                     outReal[i] = localOutputArray[i];
-                    for (int j = i + 1; j < outputSize; j++)
-                    {
-                        if (localPeriodArray[j] == curPeriod)
-                        {
+                    for (int j = i + 1; j < outputSize; j++) {
+                        if (localPeriodArray[j] == curPeriod) {
                             localPeriodArray[j] = 0;
                             outReal[j] = localOutputArray[j];
                         }
@@ -122,63 +99,49 @@ namespace TALibrary
         {
             int i;
             int tempInt = 0;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (inPeriods == null)
-            {
+            if (inPeriods == null) {
                 return RetCode.BadParam;
             }
-            if (optInMinPeriod == -2147483648)
-            {
+            if (optInMinPeriod == -2147483648) {
                 optInMinPeriod = 2;
             }
-            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0))
-            {
+            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (optInMaxPeriod == -2147483648)
-            {
+            if (optInMaxPeriod == -2147483648) {
                 optInMaxPeriod = 30;
             }
-            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0))
-            {
+            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = MovingAverageLookback(optInMaxPeriod, optInMAType);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
-            if (lookbackTotal > startIdx)
-            {
+            if (lookbackTotal > startIdx) {
                 tempInt = lookbackTotal;
             }
-            else
-            {
+            else {
                 tempInt = startIdx;
             }
-            if (tempInt > endIdx)
-            {
+            if (tempInt > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -186,45 +149,36 @@ namespace TALibrary
             int outputSize = (endIdx - tempInt) + 1;
             double[] localOutputArray = new double[outputSize];
             int[] localPeriodArray = new int[outputSize];
-            for (i = 0; i < outputSize; i++)
-            {
+            for (i = 0; i < outputSize; i++) {
                 tempInt = (int)inPeriods[startIdx + i];
-                if (tempInt < optInMinPeriod)
-                {
+                if (tempInt < optInMinPeriod) {
                     tempInt = optInMinPeriod;
                 }
-                else if (tempInt > optInMaxPeriod)
-                {
+                else if (tempInt > optInMaxPeriod) {
                     tempInt = optInMaxPeriod;
                 }
                 localPeriodArray[i] = tempInt;
             }
             i = 0;
-            while (true)
-            {
-                if (i >= outputSize)
-                {
+            while (true) {
+                if (i >= outputSize) {
                     outBegIdx = startIdx;
                     outNBElement = outputSize;
                     return RetCode.Success;
                 }
                 int curPeriod = localPeriodArray[i];
-                if (curPeriod != 0)
-                {
+                if (curPeriod != 0) {
                     int localNbElement = 0;
                     int localBegIdx = 0;
                     RetCode retCode = MovingAverage(startIdx, endIdx, inReal, curPeriod, optInMAType, ref localBegIdx, ref localNbElement, localOutputArray);
-                    if (retCode != RetCode.Success)
-                    {
+                    if (retCode != RetCode.Success) {
                         outBegIdx = 0;
                         outNBElement = 0;
                         return retCode;
                     }
                     outReal[i] = localOutputArray[i];
-                    for (int j = i + 1; j < outputSize; j++)
-                    {
-                        if (localPeriodArray[j] == curPeriod)
-                        {
+                    for (int j = i + 1; j < outputSize; j++) {
+                        if (localPeriodArray[j] == curPeriod) {
                             localPeriodArray[j] = 0;
                             outReal[j] = localOutputArray[j];
                         }
@@ -235,23 +189,19 @@ namespace TALibrary
         }
         public static int MovingAverageVariablePeriodLookback(int optInMinPeriod, int optInMaxPeriod, MAType optInMAType)
         {
-            if (optInMinPeriod == -2147483648)
-            {
+            if (optInMinPeriod == -2147483648) {
                 optInMinPeriod = 2;
             }
-            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0))
-            {
+            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0)) {
                 return -1;
             }
-            if (optInMaxPeriod == -2147483648)
-            {
+            if (optInMaxPeriod == -2147483648) {
                 optInMaxPeriod = 30;
             }
-            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0))
-            {
+            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0)) {
                 return -1;
             }
             return MovingAverageLookback(optInMaxPeriod, optInMAType);
         }
-     }
+    }
 }

@@ -1,37 +1,31 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode CdlCounterAttack(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
         {
             double num15;
             double num20;
             int num50;
             double[] BodyLongPeriodTotal = new double[2];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = CdlCounterAttackLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -42,51 +36,39 @@ namespace TALibrary
             BodyLongPeriodTotal[0] = 0.0;
             int BodyLongTrailingIdx = startIdx - Globals.candleSettings[0].avgPeriod;
             int i = EqualTrailingIdx;
-            while (true)
-            {
+            while (true) {
                 double num65;
-                if (i >= startIdx)
-                {
+                if (i >= startIdx) {
                     break;
                 }
-                if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                     num65 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
                 }
-                else
-                {
+                else {
                     double num64;
-                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                         num64 = inHigh[i - 1] - inLow[i - 1];
                     }
-                    else
-                    {
+                    else {
                         double num61;
-                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                             double num62;
                             double num63;
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num63 = inClose[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num63 = inOpen[i - 1];
                             }
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num62 = inOpen[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num62 = inClose[i - 1];
                             }
                             num61 = (inHigh[i - 1] - num63) + (num62 - inLow[i - 1]);
                         }
-                        else
-                        {
+                        else {
                             num61 = 0.0;
                         }
                         num64 = num61;
@@ -97,52 +79,40 @@ namespace TALibrary
                 i++;
             }
             i = BodyLongTrailingIdx;
-            while (true)
-            {
+            while (true) {
                 double num55;
                 double num60;
-                if (i >= startIdx)
-                {
+                if (i >= startIdx) {
                     break;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num60 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
                 }
-                else
-                {
+                else {
                     double num59;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num59 = inHigh[i - 1] - inLow[i - 1];
                     }
-                    else
-                    {
+                    else {
                         double num56;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             double num57;
                             double num58;
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num58 = inClose[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num58 = inOpen[i - 1];
                             }
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num57 = inOpen[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num57 = inClose[i - 1];
                             }
                             num56 = (inHigh[i - 1] - num58) + (num57 - inLow[i - 1]);
                         }
-                        else
-                        {
+                        else {
                             num56 = 0.0;
                         }
                         num59 = num56;
@@ -150,44 +120,34 @@ namespace TALibrary
                     num60 = num59;
                 }
                 BodyLongPeriodTotal[1] += num60;
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num55 = Math.Abs((double)(inClose[i] - inOpen[i]));
                 }
-                else
-                {
+                else {
                     double num54;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num54 = inHigh[i] - inLow[i];
                     }
-                    else
-                    {
+                    else {
                         double num51;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             double num52;
                             double num53;
-                            if (inClose[i] >= inOpen[i])
-                            {
+                            if (inClose[i] >= inOpen[i]) {
                                 num53 = inClose[i];
                             }
-                            else
-                            {
+                            else {
                                 num53 = inOpen[i];
                             }
-                            if (inClose[i] >= inOpen[i])
-                            {
+                            if (inClose[i] >= inOpen[i]) {
                                 num52 = inOpen[i];
                             }
-                            else
-                            {
+                            else {
                                 num52 = inClose[i];
                             }
                             num51 = (inHigh[i] - num53) + (num52 - inLow[i]);
                         }
-                        else
-                        {
+                        else {
                             num51 = 0.0;
                         }
                         num54 = num51;
@@ -199,64 +159,49 @@ namespace TALibrary
             }
             i = startIdx;
             int outIdx = 0;
-        Label_0345:
-            if (inClose[i] >= inOpen[i])
-            {
+            Label_0345:
+            if (inClose[i] >= inOpen[i]) {
                 num50 = 1;
             }
-            else
-            {
+            else {
                 num50 = -1;
             }
-            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -num50)
-            {
+            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -num50) {
                 double num43;
                 double num49;
-                if (Globals.candleSettings[0].avgPeriod != 0.0)
-                {
+                if (Globals.candleSettings[0].avgPeriod != 0.0) {
                     num49 = BodyLongPeriodTotal[1] / ((double)Globals.candleSettings[0].avgPeriod);
                 }
-                else
-                {
+                else {
                     double num48;
-                    if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                         num48 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
                     }
-                    else
-                    {
+                    else {
                         double num47;
-                        if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                             num47 = inHigh[i - 1] - inLow[i - 1];
                         }
-                        else
-                        {
+                        else {
                             double num44;
-                            if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                            {
+                            if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                                 double num45;
                                 double num46;
-                                if (inClose[i - 1] >= inOpen[i - 1])
-                                {
+                                if (inClose[i - 1] >= inOpen[i - 1]) {
                                     num46 = inClose[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     num46 = inOpen[i - 1];
                                 }
-                                if (inClose[i - 1] >= inOpen[i - 1])
-                                {
+                                if (inClose[i - 1] >= inOpen[i - 1]) {
                                     num45 = inOpen[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     num45 = inClose[i - 1];
                                 }
                                 num44 = (inHigh[i - 1] - num46) + (num45 - inLow[i - 1]);
                             }
-                            else
-                            {
+                            else {
                                 num44 = 0.0;
                             }
                             num47 = num44;
@@ -265,63 +210,48 @@ namespace TALibrary
                     }
                     num49 = num48;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                     num43 = 2.0;
                 }
-                else
-                {
+                else {
                     num43 = 1.0;
                 }
-                if (Math.Abs((double)(inClose[i - 1] - inOpen[i - 1])) > ((Globals.candleSettings[0].factor * num49) / num43))
-                {
+                if (Math.Abs((double)(inClose[i - 1] - inOpen[i - 1])) > ((Globals.candleSettings[0].factor * num49) / num43)) {
                     double num36;
                     double num42;
-                    if (Globals.candleSettings[0].avgPeriod != 0.0)
-                    {
+                    if (Globals.candleSettings[0].avgPeriod != 0.0) {
                         num42 = BodyLongPeriodTotal[0] / ((double)Globals.candleSettings[0].avgPeriod);
                     }
-                    else
-                    {
+                    else {
                         double num41;
-                        if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                             num41 = Math.Abs((double)(inClose[i] - inOpen[i]));
                         }
-                        else
-                        {
+                        else {
                             double num40;
-                            if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                            {
+                            if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                                 num40 = inHigh[i] - inLow[i];
                             }
-                            else
-                            {
+                            else {
                                 double num37;
-                                if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                                {
+                                if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                                     double num38;
                                     double num39;
-                                    if (inClose[i] >= inOpen[i])
-                                    {
+                                    if (inClose[i] >= inOpen[i]) {
                                         num39 = inClose[i];
                                     }
-                                    else
-                                    {
+                                    else {
                                         num39 = inOpen[i];
                                     }
-                                    if (inClose[i] >= inOpen[i])
-                                    {
+                                    if (inClose[i] >= inOpen[i]) {
                                         num38 = inOpen[i];
                                     }
-                                    else
-                                    {
+                                    else {
                                         num38 = inClose[i];
                                     }
                                     num37 = (inHigh[i] - num39) + (num38 - inLow[i]);
                                 }
-                                else
-                                {
+                                else {
                                     num37 = 0.0;
                                 }
                                 num40 = num37;
@@ -330,63 +260,48 @@ namespace TALibrary
                         }
                         num42 = num41;
                     }
-                    if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                         num36 = 2.0;
                     }
-                    else
-                    {
+                    else {
                         num36 = 1.0;
                     }
-                    if (Math.Abs((double)(inClose[i] - inOpen[i])) > ((Globals.candleSettings[0].factor * num42) / num36))
-                    {
+                    if (Math.Abs((double)(inClose[i] - inOpen[i])) > ((Globals.candleSettings[0].factor * num42) / num36)) {
                         double num29;
                         double num35;
-                        if (Globals.candleSettings[10].avgPeriod != 0.0)
-                        {
+                        if (Globals.candleSettings[10].avgPeriod != 0.0) {
                             num35 = EqualPeriodTotal / ((double)Globals.candleSettings[10].avgPeriod);
                         }
-                        else
-                        {
+                        else {
                             double num34;
-                            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                            {
+                            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                                 num34 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
                             }
-                            else
-                            {
+                            else {
                                 double num33;
-                                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                                {
+                                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                                     num33 = inHigh[i - 1] - inLow[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     double num30;
-                                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                                    {
+                                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                         double num31;
                                         double num32;
-                                        if (inClose[i - 1] >= inOpen[i - 1])
-                                        {
+                                        if (inClose[i - 1] >= inOpen[i - 1]) {
                                             num32 = inClose[i - 1];
                                         }
-                                        else
-                                        {
+                                        else {
                                             num32 = inOpen[i - 1];
                                         }
-                                        if (inClose[i - 1] >= inOpen[i - 1])
-                                        {
+                                        if (inClose[i - 1] >= inOpen[i - 1]) {
                                             num31 = inOpen[i - 1];
                                         }
-                                        else
-                                        {
+                                        else {
                                             num31 = inClose[i - 1];
                                         }
                                         num30 = (inHigh[i - 1] - num32) + (num31 - inLow[i - 1]);
                                     }
-                                    else
-                                    {
+                                    else {
                                         num30 = 0.0;
                                     }
                                     num33 = num30;
@@ -395,63 +310,48 @@ namespace TALibrary
                             }
                             num35 = num34;
                         }
-                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                             num29 = 2.0;
                         }
-                        else
-                        {
+                        else {
                             num29 = 1.0;
                         }
-                        if (inClose[i] <= (inClose[i - 1] + ((Globals.candleSettings[10].factor * num35) / num29)))
-                        {
+                        if (inClose[i] <= (inClose[i - 1] + ((Globals.candleSettings[10].factor * num35) / num29))) {
                             double num22;
                             double num28;
-                            if (Globals.candleSettings[10].avgPeriod != 0.0)
-                            {
+                            if (Globals.candleSettings[10].avgPeriod != 0.0) {
                                 num28 = EqualPeriodTotal / ((double)Globals.candleSettings[10].avgPeriod);
                             }
-                            else
-                            {
+                            else {
                                 double num27;
-                                if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                                {
+                                if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                                     num27 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
                                 }
-                                else
-                                {
+                                else {
                                     double num26;
-                                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                                    {
+                                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                                         num26 = inHigh[i - 1] - inLow[i - 1];
                                     }
-                                    else
-                                    {
+                                    else {
                                         double num23;
-                                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                                        {
+                                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                             double num24;
                                             double num25;
-                                            if (inClose[i - 1] >= inOpen[i - 1])
-                                            {
+                                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                                 num25 = inClose[i - 1];
                                             }
-                                            else
-                                            {
+                                            else {
                                                 num25 = inOpen[i - 1];
                                             }
-                                            if (inClose[i - 1] >= inOpen[i - 1])
-                                            {
+                                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                                 num24 = inOpen[i - 1];
                                             }
-                                            else
-                                            {
+                                            else {
                                                 num24 = inClose[i - 1];
                                             }
                                             num23 = (inHigh[i - 1] - num25) + (num24 - inLow[i - 1]);
                                         }
-                                        else
-                                        {
+                                        else {
                                             num23 = 0.0;
                                         }
                                         num26 = num23;
@@ -460,23 +360,18 @@ namespace TALibrary
                                 }
                                 num28 = num27;
                             }
-                            if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                            {
+                            if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                 num22 = 2.0;
                             }
-                            else
-                            {
+                            else {
                                 num22 = 1.0;
                             }
-                            if (inClose[i] >= (inClose[i - 1] - ((Globals.candleSettings[10].factor * num28) / num22)))
-                            {
+                            if (inClose[i] >= (inClose[i - 1] - ((Globals.candleSettings[10].factor * num28) / num22))) {
                                 int num21;
-                                if (inClose[i] >= inOpen[i])
-                                {
+                                if (inClose[i] >= inOpen[i]) {
                                     num21 = 1;
                                 }
-                                else
-                                {
+                                else {
                                     num21 = -1;
                                 }
                                 outInteger[outIdx] = num21 * 100;
@@ -489,89 +384,69 @@ namespace TALibrary
             }
             outInteger[outIdx] = 0;
             outIdx++;
-        Label_0902:
-            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-            {
+            Label_0902:
+            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                 num20 = Math.Abs((double)(inClose[i - 1] - inOpen[i - 1]));
             }
-            else
-            {
+            else {
                 double num19;
-                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                     num19 = inHigh[i - 1] - inLow[i - 1];
                 }
-                else
-                {
+                else {
                     double num16;
-                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                         double num17;
                         double num18;
-                        if (inClose[i - 1] >= inOpen[i - 1])
-                        {
+                        if (inClose[i - 1] >= inOpen[i - 1]) {
                             num18 = inClose[i - 1];
                         }
-                        else
-                        {
+                        else {
                             num18 = inOpen[i - 1];
                         }
-                        if (inClose[i - 1] >= inOpen[i - 1])
-                        {
+                        if (inClose[i - 1] >= inOpen[i - 1]) {
                             num17 = inOpen[i - 1];
                         }
-                        else
-                        {
+                        else {
                             num17 = inClose[i - 1];
                         }
                         num16 = (inHigh[i - 1] - num18) + (num17 - inLow[i - 1]);
                     }
-                    else
-                    {
+                    else {
                         num16 = 0.0;
                     }
                     num19 = num16;
                 }
                 num20 = num19;
             }
-            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-            {
+            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                 num15 = Math.Abs((double)(inClose[EqualTrailingIdx - 1] - inOpen[EqualTrailingIdx - 1]));
             }
-            else
-            {
+            else {
                 double num14;
-                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                     num14 = inHigh[EqualTrailingIdx - 1] - inLow[EqualTrailingIdx - 1];
                 }
-                else
-                {
+                else {
                     double num11;
-                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                         double num12;
                         double num13;
-                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1])
-                        {
+                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1]) {
                             num13 = inClose[EqualTrailingIdx - 1];
                         }
-                        else
-                        {
+                        else {
                             num13 = inOpen[EqualTrailingIdx - 1];
                         }
-                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1])
-                        {
+                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1]) {
                             num12 = inOpen[EqualTrailingIdx - 1];
                         }
-                        else
-                        {
+                        else {
                             num12 = inClose[EqualTrailingIdx - 1];
                         }
                         num11 = (inHigh[EqualTrailingIdx - 1] - num13) + (num12 - inLow[EqualTrailingIdx - 1]);
                     }
-                    else
-                    {
+                    else {
                         num11 = 0.0;
                     }
                     num14 = num11;
@@ -579,92 +454,71 @@ namespace TALibrary
                 num15 = num14;
             }
             EqualPeriodTotal += num20 - num15;
-            for (int totIdx = 1; totIdx >= 0; totIdx--)
-            {
+            for (int totIdx = 1; totIdx >= 0; totIdx--) {
                 double num5;
                 double num10;
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num10 = Math.Abs((double)(inClose[i - totIdx] - inOpen[i - totIdx]));
                 }
-                else
-                {
+                else {
                     double num9;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num9 = inHigh[i - totIdx] - inLow[i - totIdx];
                     }
-                    else
-                    {
+                    else {
                         double num6;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             double num7;
                             double num8;
-                            if (inClose[i - totIdx] >= inOpen[i - totIdx])
-                            {
+                            if (inClose[i - totIdx] >= inOpen[i - totIdx]) {
                                 num8 = inClose[i - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num8 = inOpen[i - totIdx];
                             }
-                            if (inClose[i - totIdx] >= inOpen[i - totIdx])
-                            {
+                            if (inClose[i - totIdx] >= inOpen[i - totIdx]) {
                                 num7 = inOpen[i - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num7 = inClose[i - totIdx];
                             }
                             num6 = (inHigh[i - totIdx] - num8) + (num7 - inLow[i - totIdx]);
                         }
-                        else
-                        {
+                        else {
                             num6 = 0.0;
                         }
                         num9 = num6;
                     }
                     num10 = num9;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num5 = Math.Abs((double)(inClose[BodyLongTrailingIdx - totIdx] - inOpen[BodyLongTrailingIdx - totIdx]));
                 }
-                else
-                {
+                else {
                     double num4;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num4 = inHigh[BodyLongTrailingIdx - totIdx] - inLow[BodyLongTrailingIdx - totIdx];
                     }
-                    else
-                    {
+                    else {
                         double num;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             double num2;
                             double num3;
-                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx])
-                            {
+                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx]) {
                                 num3 = inClose[BodyLongTrailingIdx - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num3 = inOpen[BodyLongTrailingIdx - totIdx];
                             }
-                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx])
-                            {
+                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx]) {
                                 num2 = inOpen[BodyLongTrailingIdx - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num2 = inClose[BodyLongTrailingIdx - totIdx];
                             }
                             num = (inHigh[BodyLongTrailingIdx - totIdx] - num3) + (num2 - inLow[BodyLongTrailingIdx - totIdx]);
                         }
-                        else
-                        {
+                        else {
                             num = 0.0;
                         }
                         num4 = num;
@@ -676,8 +530,7 @@ namespace TALibrary
             i++;
             EqualTrailingIdx++;
             BodyLongTrailingIdx++;
-            if (i <= endIdx)
-            {
+            if (i <= endIdx) {
                 goto Label_0345;
             }
             outNBElement = outIdx;
@@ -690,29 +543,23 @@ namespace TALibrary
             float num20;
             int num50;
             double[] BodyLongPeriodTotal = new double[2];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = CdlCounterAttackLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -723,51 +570,39 @@ namespace TALibrary
             BodyLongPeriodTotal[0] = 0.0;
             int BodyLongTrailingIdx = startIdx - Globals.candleSettings[0].avgPeriod;
             int i = EqualTrailingIdx;
-            while (true)
-            {
+            while (true) {
                 float num65;
-                if (i >= startIdx)
-                {
+                if (i >= startIdx) {
                     break;
                 }
-                if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                     num65 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
                 }
-                else
-                {
+                else {
                     float num64;
-                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                         num64 = inHigh[i - 1] - inLow[i - 1];
                     }
-                    else
-                    {
+                    else {
                         float num61;
-                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                             float num62;
                             float num63;
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num63 = inClose[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num63 = inOpen[i - 1];
                             }
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num62 = inOpen[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num62 = inClose[i - 1];
                             }
                             num61 = (inHigh[i - 1] - num63) + (num62 - inLow[i - 1]);
                         }
-                        else
-                        {
+                        else {
                             num61 = 0.0f;
                         }
                         num64 = num61;
@@ -778,52 +613,40 @@ namespace TALibrary
                 i++;
             }
             i = BodyLongTrailingIdx;
-            while (true)
-            {
+            while (true) {
                 float num55;
                 float num60;
-                if (i >= startIdx)
-                {
+                if (i >= startIdx) {
                     break;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num60 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
                 }
-                else
-                {
+                else {
                     float num59;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num59 = inHigh[i - 1] - inLow[i - 1];
                     }
-                    else
-                    {
+                    else {
                         float num56;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             float num57;
                             float num58;
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num58 = inClose[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num58 = inOpen[i - 1];
                             }
-                            if (inClose[i - 1] >= inOpen[i - 1])
-                            {
+                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                 num57 = inOpen[i - 1];
                             }
-                            else
-                            {
+                            else {
                                 num57 = inClose[i - 1];
                             }
                             num56 = (inHigh[i - 1] - num58) + (num57 - inLow[i - 1]);
                         }
-                        else
-                        {
+                        else {
                             num56 = 0.0f;
                         }
                         num59 = num56;
@@ -831,44 +654,34 @@ namespace TALibrary
                     num60 = num59;
                 }
                 BodyLongPeriodTotal[1] += num60;
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num55 = Math.Abs((float)(inClose[i] - inOpen[i]));
                 }
-                else
-                {
+                else {
                     float num54;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num54 = inHigh[i] - inLow[i];
                     }
-                    else
-                    {
+                    else {
                         float num51;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             float num52;
                             float num53;
-                            if (inClose[i] >= inOpen[i])
-                            {
+                            if (inClose[i] >= inOpen[i]) {
                                 num53 = inClose[i];
                             }
-                            else
-                            {
+                            else {
                                 num53 = inOpen[i];
                             }
-                            if (inClose[i] >= inOpen[i])
-                            {
+                            if (inClose[i] >= inOpen[i]) {
                                 num52 = inOpen[i];
                             }
-                            else
-                            {
+                            else {
                                 num52 = inClose[i];
                             }
                             num51 = (inHigh[i] - num53) + (num52 - inLow[i]);
                         }
-                        else
-                        {
+                        else {
                             num51 = 0.0f;
                         }
                         num54 = num51;
@@ -880,64 +693,49 @@ namespace TALibrary
             }
             i = startIdx;
             int outIdx = 0;
-        Label_036F:
-            if (inClose[i] >= inOpen[i])
-            {
+            Label_036F:
+            if (inClose[i] >= inOpen[i]) {
                 num50 = 1;
             }
-            else
-            {
+            else {
                 num50 = -1;
             }
-            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -num50)
-            {
+            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -num50) {
                 double num43;
                 double num49;
-                if (Globals.candleSettings[0].avgPeriod != 0.0)
-                {
+                if (Globals.candleSettings[0].avgPeriod != 0.0) {
                     num49 = BodyLongPeriodTotal[1] / ((double)Globals.candleSettings[0].avgPeriod);
                 }
-                else
-                {
+                else {
                     float num48;
-                    if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                         num48 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
                     }
-                    else
-                    {
+                    else {
                         float num47;
-                        if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                             num47 = inHigh[i - 1] - inLow[i - 1];
                         }
-                        else
-                        {
+                        else {
                             float num44;
-                            if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                            {
+                            if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                                 float num45;
                                 float num46;
-                                if (inClose[i - 1] >= inOpen[i - 1])
-                                {
+                                if (inClose[i - 1] >= inOpen[i - 1]) {
                                     num46 = inClose[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     num46 = inOpen[i - 1];
                                 }
-                                if (inClose[i - 1] >= inOpen[i - 1])
-                                {
+                                if (inClose[i - 1] >= inOpen[i - 1]) {
                                     num45 = inOpen[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     num45 = inClose[i - 1];
                                 }
                                 num44 = (inHigh[i - 1] - num46) + (num45 - inLow[i - 1]);
                             }
-                            else
-                            {
+                            else {
                                 num44 = 0.0f;
                             }
                             num47 = num44;
@@ -946,63 +744,48 @@ namespace TALibrary
                     }
                     num49 = num48;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                     num43 = 2.0;
                 }
-                else
-                {
+                else {
                     num43 = 1.0;
                 }
-                if (Math.Abs((float)(inClose[i - 1] - inOpen[i - 1])) > ((Globals.candleSettings[0].factor * num49) / num43))
-                {
+                if (Math.Abs((float)(inClose[i - 1] - inOpen[i - 1])) > ((Globals.candleSettings[0].factor * num49) / num43)) {
                     double num36;
                     double num42;
-                    if (Globals.candleSettings[0].avgPeriod != 0.0)
-                    {
+                    if (Globals.candleSettings[0].avgPeriod != 0.0) {
                         num42 = BodyLongPeriodTotal[0] / ((double)Globals.candleSettings[0].avgPeriod);
                     }
-                    else
-                    {
+                    else {
                         float num41;
-                        if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                             num41 = Math.Abs((float)(inClose[i] - inOpen[i]));
                         }
-                        else
-                        {
+                        else {
                             float num40;
-                            if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                            {
+                            if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                                 num40 = inHigh[i] - inLow[i];
                             }
-                            else
-                            {
+                            else {
                                 float num37;
-                                if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                                {
+                                if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                                     float num38;
                                     float num39;
-                                    if (inClose[i] >= inOpen[i])
-                                    {
+                                    if (inClose[i] >= inOpen[i]) {
                                         num39 = inClose[i];
                                     }
-                                    else
-                                    {
+                                    else {
                                         num39 = inOpen[i];
                                     }
-                                    if (inClose[i] >= inOpen[i])
-                                    {
+                                    if (inClose[i] >= inOpen[i]) {
                                         num38 = inOpen[i];
                                     }
-                                    else
-                                    {
+                                    else {
                                         num38 = inClose[i];
                                     }
                                     num37 = (inHigh[i] - num39) + (num38 - inLow[i]);
                                 }
-                                else
-                                {
+                                else {
                                     num37 = 0.0f;
                                 }
                                 num40 = num37;
@@ -1011,63 +794,48 @@ namespace TALibrary
                         }
                         num42 = num41;
                     }
-                    if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                         num36 = 2.0;
                     }
-                    else
-                    {
+                    else {
                         num36 = 1.0;
                     }
-                    if (Math.Abs((float)(inClose[i] - inOpen[i])) > ((Globals.candleSettings[0].factor * num42) / num36))
-                    {
+                    if (Math.Abs((float)(inClose[i] - inOpen[i])) > ((Globals.candleSettings[0].factor * num42) / num36)) {
                         double num29;
                         double num35;
-                        if (Globals.candleSettings[10].avgPeriod != 0.0)
-                        {
+                        if (Globals.candleSettings[10].avgPeriod != 0.0) {
                             num35 = EqualPeriodTotal / ((double)Globals.candleSettings[10].avgPeriod);
                         }
-                        else
-                        {
+                        else {
                             float num34;
-                            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                            {
+                            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                                 num34 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
                             }
-                            else
-                            {
+                            else {
                                 float num33;
-                                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                                {
+                                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                                     num33 = inHigh[i - 1] - inLow[i - 1];
                                 }
-                                else
-                                {
+                                else {
                                     float num30;
-                                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                                    {
+                                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                         float num31;
                                         float num32;
-                                        if (inClose[i - 1] >= inOpen[i - 1])
-                                        {
+                                        if (inClose[i - 1] >= inOpen[i - 1]) {
                                             num32 = inClose[i - 1];
                                         }
-                                        else
-                                        {
+                                        else {
                                             num32 = inOpen[i - 1];
                                         }
-                                        if (inClose[i - 1] >= inOpen[i - 1])
-                                        {
+                                        if (inClose[i - 1] >= inOpen[i - 1]) {
                                             num31 = inOpen[i - 1];
                                         }
-                                        else
-                                        {
+                                        else {
                                             num31 = inClose[i - 1];
                                         }
                                         num30 = (inHigh[i - 1] - num32) + (num31 - inLow[i - 1]);
                                     }
-                                    else
-                                    {
+                                    else {
                                         num30 = 0.0f;
                                     }
                                     num33 = num30;
@@ -1076,63 +844,48 @@ namespace TALibrary
                             }
                             num35 = num34;
                         }
-                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                             num29 = 2.0;
                         }
-                        else
-                        {
+                        else {
                             num29 = 1.0;
                         }
-                        if (inClose[i] <= (inClose[i - 1] + ((Globals.candleSettings[10].factor * num35) / num29)))
-                        {
+                        if (inClose[i] <= (inClose[i - 1] + ((Globals.candleSettings[10].factor * num35) / num29))) {
                             double num22;
                             double num28;
-                            if (Globals.candleSettings[10].avgPeriod != 0.0)
-                            {
+                            if (Globals.candleSettings[10].avgPeriod != 0.0) {
                                 num28 = EqualPeriodTotal / ((double)Globals.candleSettings[10].avgPeriod);
                             }
-                            else
-                            {
+                            else {
                                 float num27;
-                                if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-                                {
+                                if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                                     num27 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
                                 }
-                                else
-                                {
+                                else {
                                     float num26;
-                                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                                    {
+                                    if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                                         num26 = inHigh[i - 1] - inLow[i - 1];
                                     }
-                                    else
-                                    {
+                                    else {
                                         float num23;
-                                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                                        {
+                                        if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                             float num24;
                                             float num25;
-                                            if (inClose[i - 1] >= inOpen[i - 1])
-                                            {
+                                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                                 num25 = inClose[i - 1];
                                             }
-                                            else
-                                            {
+                                            else {
                                                 num25 = inOpen[i - 1];
                                             }
-                                            if (inClose[i - 1] >= inOpen[i - 1])
-                                            {
+                                            if (inClose[i - 1] >= inOpen[i - 1]) {
                                                 num24 = inOpen[i - 1];
                                             }
-                                            else
-                                            {
+                                            else {
                                                 num24 = inClose[i - 1];
                                             }
                                             num23 = (inHigh[i - 1] - num25) + (num24 - inLow[i - 1]);
                                         }
-                                        else
-                                        {
+                                        else {
                                             num23 = 0.0f;
                                         }
                                         num26 = num23;
@@ -1141,23 +894,18 @@ namespace TALibrary
                                 }
                                 num28 = num27;
                             }
-                            if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                            {
+                            if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                                 num22 = 2.0;
                             }
-                            else
-                            {
+                            else {
                                 num22 = 1.0;
                             }
-                            if (inClose[i] >= (inClose[i - 1] - ((Globals.candleSettings[10].factor * num28) / num22)))
-                            {
+                            if (inClose[i] >= (inClose[i - 1] - ((Globals.candleSettings[10].factor * num28) / num22))) {
                                 int num21;
-                                if (inClose[i] >= inOpen[i])
-                                {
+                                if (inClose[i] >= inOpen[i]) {
                                     num21 = 1;
                                 }
-                                else
-                                {
+                                else {
                                     num21 = -1;
                                 }
                                 outInteger[outIdx] = num21 * 100;
@@ -1170,89 +918,69 @@ namespace TALibrary
             }
             outInteger[outIdx] = 0;
             outIdx++;
-        Label_0976:
-            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-            {
+            Label_0976:
+            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                 num20 = Math.Abs((float)(inClose[i - 1] - inOpen[i - 1]));
             }
-            else
-            {
+            else {
                 float num19;
-                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                     num19 = inHigh[i - 1] - inLow[i - 1];
                 }
-                else
-                {
+                else {
                     float num16;
-                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                         float num17;
                         float num18;
-                        if (inClose[i - 1] >= inOpen[i - 1])
-                        {
+                        if (inClose[i - 1] >= inOpen[i - 1]) {
                             num18 = inClose[i - 1];
                         }
-                        else
-                        {
+                        else {
                             num18 = inOpen[i - 1];
                         }
-                        if (inClose[i - 1] >= inOpen[i - 1])
-                        {
+                        if (inClose[i - 1] >= inOpen[i - 1]) {
                             num17 = inOpen[i - 1];
                         }
-                        else
-                        {
+                        else {
                             num17 = inClose[i - 1];
                         }
                         num16 = (inHigh[i - 1] - num18) + (num17 - inLow[i - 1]);
                     }
-                    else
-                    {
+                    else {
                         num16 = 0.0f;
                     }
                     num19 = num16;
                 }
                 num20 = num19;
             }
-            if (Globals.candleSettings[10].rangeType == RangeType.RealBody)
-            {
+            if (Globals.candleSettings[10].rangeType == RangeType.RealBody) {
                 num15 = Math.Abs((float)(inClose[EqualTrailingIdx - 1] - inOpen[EqualTrailingIdx - 1]));
             }
-            else
-            {
+            else {
                 float num14;
-                if (Globals.candleSettings[10].rangeType == RangeType.HighLow)
-                {
+                if (Globals.candleSettings[10].rangeType == RangeType.HighLow) {
                     num14 = inHigh[EqualTrailingIdx - 1] - inLow[EqualTrailingIdx - 1];
                 }
-                else
-                {
+                else {
                     float num11;
-                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows)
-                    {
+                    if (Globals.candleSettings[10].rangeType == RangeType.Shadows) {
                         float num12;
                         float num13;
-                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1])
-                        {
+                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1]) {
                             num13 = inClose[EqualTrailingIdx - 1];
                         }
-                        else
-                        {
+                        else {
                             num13 = inOpen[EqualTrailingIdx - 1];
                         }
-                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1])
-                        {
+                        if (inClose[EqualTrailingIdx - 1] >= inOpen[EqualTrailingIdx - 1]) {
                             num12 = inOpen[EqualTrailingIdx - 1];
                         }
-                        else
-                        {
+                        else {
                             num12 = inClose[EqualTrailingIdx - 1];
                         }
                         num11 = (inHigh[EqualTrailingIdx - 1] - num13) + (num12 - inLow[EqualTrailingIdx - 1]);
                     }
-                    else
-                    {
+                    else {
                         num11 = 0.0f;
                     }
                     num14 = num11;
@@ -1260,92 +988,71 @@ namespace TALibrary
                 num15 = num14;
             }
             EqualPeriodTotal += num20 - num15;
-            for (int totIdx = 1; totIdx >= 0; totIdx--)
-            {
+            for (int totIdx = 1; totIdx >= 0; totIdx--) {
                 float num5;
                 float num10;
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num10 = Math.Abs((float)(inClose[i - totIdx] - inOpen[i - totIdx]));
                 }
-                else
-                {
+                else {
                     float num9;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num9 = inHigh[i - totIdx] - inLow[i - totIdx];
                     }
-                    else
-                    {
+                    else {
                         float num6;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             float num7;
                             float num8;
-                            if (inClose[i - totIdx] >= inOpen[i - totIdx])
-                            {
+                            if (inClose[i - totIdx] >= inOpen[i - totIdx]) {
                                 num8 = inClose[i - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num8 = inOpen[i - totIdx];
                             }
-                            if (inClose[i - totIdx] >= inOpen[i - totIdx])
-                            {
+                            if (inClose[i - totIdx] >= inOpen[i - totIdx]) {
                                 num7 = inOpen[i - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num7 = inClose[i - totIdx];
                             }
                             num6 = (inHigh[i - totIdx] - num8) + (num7 - inLow[i - totIdx]);
                         }
-                        else
-                        {
+                        else {
                             num6 = 0.0f;
                         }
                         num9 = num6;
                     }
                     num10 = num9;
                 }
-                if (Globals.candleSettings[0].rangeType == RangeType.RealBody)
-                {
+                if (Globals.candleSettings[0].rangeType == RangeType.RealBody) {
                     num5 = Math.Abs((float)(inClose[BodyLongTrailingIdx - totIdx] - inOpen[BodyLongTrailingIdx - totIdx]));
                 }
-                else
-                {
+                else {
                     float num4;
-                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow)
-                    {
+                    if (Globals.candleSettings[0].rangeType == RangeType.HighLow) {
                         num4 = inHigh[BodyLongTrailingIdx - totIdx] - inLow[BodyLongTrailingIdx - totIdx];
                     }
-                    else
-                    {
+                    else {
                         float num;
-                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows)
-                        {
+                        if (Globals.candleSettings[0].rangeType == RangeType.Shadows) {
                             float num2;
                             float num3;
-                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx])
-                            {
+                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx]) {
                                 num3 = inClose[BodyLongTrailingIdx - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num3 = inOpen[BodyLongTrailingIdx - totIdx];
                             }
-                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx])
-                            {
+                            if (inClose[BodyLongTrailingIdx - totIdx] >= inOpen[BodyLongTrailingIdx - totIdx]) {
                                 num2 = inOpen[BodyLongTrailingIdx - totIdx];
                             }
-                            else
-                            {
+                            else {
                                 num2 = inClose[BodyLongTrailingIdx - totIdx];
                             }
                             num = (inHigh[BodyLongTrailingIdx - totIdx] - num3) + (num2 - inLow[BodyLongTrailingIdx - totIdx]);
                         }
-                        else
-                        {
+                        else {
                             num = 0.0f;
                         }
                         num4 = num;
@@ -1357,8 +1064,7 @@ namespace TALibrary
             i++;
             EqualTrailingIdx++;
             BodyLongTrailingIdx++;
-            if (i <= endIdx)
-            {
+            if (i <= endIdx) {
                 goto Label_036F;
             }
             outNBElement = outIdx;
@@ -1369,5 +1075,5 @@ namespace TALibrary
         {
             return (((Globals.candleSettings[10].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[10].avgPeriod) + 1);
         }
-     }
+    }
 }

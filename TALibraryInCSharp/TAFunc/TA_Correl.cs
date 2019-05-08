@@ -1,47 +1,38 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Correl(int startIdx, int endIdx, double[] inReal0, double[] inReal1, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double y;
             double x;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -54,8 +45,7 @@ namespace TALibrary
             double sumX = sumY;
             double sumXY = sumX;
             int today = trailingIdx;
-            while (today <= startIdx)
-            {
+            while (today <= startIdx) {
                 x = inReal0[today];
                 sumX += x;
                 sumX2 += x * x;
@@ -69,17 +59,14 @@ namespace TALibrary
             double trailingY = inReal1[trailingIdx];
             trailingIdx++;
             double tempReal = (sumX2 - ((sumX * sumX) / ((double)optInTimePeriod))) * (sumY2 - ((sumY * sumY) / ((double)optInTimePeriod)));
-            if (tempReal >= 1E-08)
-            {
+            if (tempReal >= 1E-08) {
                 outReal[0] = (sumXY - ((sumX * sumY) / ((double)optInTimePeriod))) / Math.Sqrt(tempReal);
             }
-            else
-            {
+            else {
                 outReal[0] = 0.0;
             }
             int outIdx = 1;
-            while (today <= endIdx)
-            {
+            while (today <= endIdx) {
                 sumX -= trailingX;
                 sumX2 -= trailingX * trailingX;
                 sumXY -= trailingX * trailingY;
@@ -97,13 +84,11 @@ namespace TALibrary
                 trailingY = inReal1[trailingIdx];
                 trailingIdx++;
                 tempReal = (sumX2 - ((sumX * sumX) / ((double)optInTimePeriod))) * (sumY2 - ((sumY * sumY) / ((double)optInTimePeriod)));
-                if (tempReal >= 1E-08)
-                {
+                if (tempReal >= 1E-08) {
                     outReal[outIdx] = (sumXY - ((sumX * sumY) / ((double)optInTimePeriod))) / Math.Sqrt(tempReal);
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -115,41 +100,32 @@ namespace TALibrary
         {
             double y;
             double x;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal0 == null)
-            {
+            if (inReal0 == null) {
                 return RetCode.BadParam;
             }
-            if (inReal1 == null)
-            {
+            if (inReal1 == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -162,8 +138,7 @@ namespace TALibrary
             double sumX = sumY;
             double sumXY = sumX;
             int today = trailingIdx;
-            while (today <= startIdx)
-            {
+            while (today <= startIdx) {
                 x = inReal0[today];
                 sumX += x;
                 sumX2 += x * x;
@@ -177,17 +152,14 @@ namespace TALibrary
             double trailingY = inReal1[trailingIdx];
             trailingIdx++;
             double tempReal = (sumX2 - ((sumX * sumX) / ((double)optInTimePeriod))) * (sumY2 - ((sumY * sumY) / ((double)optInTimePeriod)));
-            if (tempReal >= 1E-08)
-            {
+            if (tempReal >= 1E-08) {
                 outReal[0] = (sumXY - ((sumX * sumY) / ((double)optInTimePeriod))) / Math.Sqrt(tempReal);
             }
-            else
-            {
+            else {
                 outReal[0] = 0.0;
             }
             int outIdx = 1;
-            while (today <= endIdx)
-            {
+            while (today <= endIdx) {
                 sumX -= trailingX;
                 sumX2 -= trailingX * trailingX;
                 sumXY -= trailingX * trailingY;
@@ -205,13 +177,11 @@ namespace TALibrary
                 trailingY = inReal1[trailingIdx];
                 trailingIdx++;
                 tempReal = (sumX2 - ((sumX * sumX) / ((double)optInTimePeriod))) * (sumY2 - ((sumY * sumY) / ((double)optInTimePeriod)));
-                if (tempReal >= 1E-08)
-                {
+                if (tempReal >= 1E-08) {
                     outReal[outIdx] = (sumXY - ((sumX * sumY) / ((double)optInTimePeriod))) / Math.Sqrt(tempReal);
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -221,15 +191,13 @@ namespace TALibrary
         }
         public static int CorrelLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return (optInTimePeriod - 1);
         }
-     }
+    }
 }

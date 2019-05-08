@@ -1,40 +1,32 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode RocP(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 10;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (startIdx < optInTimePeriod)
-            {
+            if (startIdx < optInTimePeriod) {
                 startIdx = optInTimePeriod;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -42,21 +34,17 @@ namespace TALibrary
             int outIdx = 0;
             int inIdx = startIdx;
             int trailingIdx = startIdx - optInTimePeriod;
-            while (true)
-            {
-                if (inIdx > endIdx)
-                {
+            while (true) {
+                if (inIdx > endIdx) {
                     break;
                 }
                 double tempReal = inReal[trailingIdx];
                 trailingIdx++;
-                if (tempReal != 0.0)
-                {
+                if (tempReal != 0.0) {
                     outReal[outIdx] = (inReal[inIdx] - tempReal) / tempReal;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -68,36 +56,28 @@ namespace TALibrary
         }
         public static RetCode RocP(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 10;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (startIdx < optInTimePeriod)
-            {
+            if (startIdx < optInTimePeriod) {
                 startIdx = optInTimePeriod;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -105,21 +85,17 @@ namespace TALibrary
             int outIdx = 0;
             int inIdx = startIdx;
             int trailingIdx = startIdx - optInTimePeriod;
-            while (true)
-            {
-                if (inIdx > endIdx)
-                {
+            while (true) {
+                if (inIdx > endIdx) {
                     break;
                 }
                 double tempReal = inReal[trailingIdx];
                 trailingIdx++;
-                if (tempReal != 0.0)
-                {
+                if (tempReal != 0.0) {
                     outReal[outIdx] = (inReal[inIdx] - tempReal) / tempReal;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -131,15 +107,13 @@ namespace TALibrary
         }
         public static int RocPLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 10;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return optInTimePeriod;
         }
-     }
+    }
 }

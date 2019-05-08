@@ -1,41 +1,33 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Sum(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -43,17 +35,14 @@ namespace TALibrary
             double periodTotal = 0.0;
             int trailingIdx = startIdx - lookbackTotal;
             int i = trailingIdx;
-            if (optInTimePeriod > 1)
-            {
-                while (i < startIdx)
-                {
+            if (optInTimePeriod > 1) {
+                while (i < startIdx) {
                     periodTotal += inReal[i];
                     i++;
                 }
             }
             int outIdx = 0;
-            do
-            {
+            do {
                 periodTotal += inReal[i];
                 i++;
                 double tempReal = periodTotal;
@@ -69,37 +58,29 @@ namespace TALibrary
         }
         public static RetCode Sum(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -107,17 +88,14 @@ namespace TALibrary
             double periodTotal = 0.0;
             int trailingIdx = startIdx - lookbackTotal;
             int i = trailingIdx;
-            if (optInTimePeriod > 1)
-            {
-                while (i < startIdx)
-                {
+            if (optInTimePeriod > 1) {
+                while (i < startIdx) {
                     periodTotal += inReal[i];
                     i++;
                 }
             }
             int outIdx = 0;
-            do
-            {
+            do {
                 periodTotal += inReal[i];
                 i++;
                 double tempReal = periodTotal;
@@ -133,15 +111,13 @@ namespace TALibrary
         }
         public static int SumLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return (optInTimePeriod - 1);
         }
-     }
+    }
 }

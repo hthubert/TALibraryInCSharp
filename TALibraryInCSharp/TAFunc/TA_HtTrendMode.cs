@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode HtTrendMode(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, int[] outInteger)
         {
             double smoothedValue;
@@ -18,25 +18,20 @@ namespace TALibrary
             double[] jQ_Even = new double[3];
             int smoothPrice_Idx = 0;
             int maxIdx_smoothPrice = 0x31;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             double[] smoothPrice = new double[maxIdx_smoothPrice + 1];
-            if (smoothPrice == null)
-            {
+            if (smoothPrice == null) {
                 return RetCode.AllocErr;
             }
             double iTrend3 = 0.0;
@@ -54,12 +49,10 @@ namespace TALibrary
             double deg2Rad = 1.0 / rad2Deg;
             double constDeg2RadBy360 = tempReal * 8.0;
             int lookbackTotal = ((int)Globals.unstablePeriod[11]) + 0x3f;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -81,8 +74,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 0x22;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -152,19 +144,16 @@ namespace TALibrary
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double smoothPeriod = 0.0;
             i = 0;
-            while (i < 50)
-            {
+            while (i < 50) {
                 smoothPrice[i] = 0.0;
                 i++;
             }
             DCPhase = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     outNBElement = outIdx;
                     return RetCode.Success;
                 }
@@ -178,8 +167,7 @@ namespace TALibrary
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
                 smoothPrice[smoothPrice_Idx] = smoothedValue;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -217,8 +205,7 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
@@ -226,8 +213,7 @@ namespace TALibrary
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -274,26 +260,21 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 double tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
@@ -305,46 +286,37 @@ namespace TALibrary
                 double imagPart = 0.0;
                 int idx = smoothPrice_Idx;
                 i = 0;
-                while (i < DCPeriodInt)
-                {
+                while (i < DCPeriodInt) {
                     tempReal = (i * constDeg2RadBy360) / ((double)DCPeriodInt);
                     tempReal2 = smoothPrice[idx];
                     realPart += Math.Sin(tempReal) * tempReal2;
                     imagPart += Math.Cos(tempReal) * tempReal2;
-                    if (idx == 0)
-                    {
+                    if (idx == 0) {
                         idx = 0x31;
                     }
-                    else
-                    {
+                    else {
                         idx--;
                     }
                     i++;
                 }
                 tempReal = Math.Abs(imagPart);
-                if (tempReal > 0.0)
-                {
+                if (tempReal > 0.0) {
                     DCPhase = Math.Atan(realPart / imagPart) * rad2Deg;
                 }
-                else if (tempReal <= 0.01)
-                {
-                    if (realPart < 0.0)
-                    {
+                else if (tempReal <= 0.01) {
+                    if (realPart < 0.0) {
                         DCPhase -= 90.0;
                     }
-                    else if (realPart > 0.0)
-                    {
+                    else if (realPart > 0.0) {
                         DCPhase += 90.0;
                     }
                 }
                 DCPhase += 90.0;
                 DCPhase += 360.0 / smoothPeriod;
-                if (imagPart < 0.0)
-                {
+                if (imagPart < 0.0) {
                     DCPhase += 180.0;
                 }
-                if (DCPhase > 315.0)
-                {
+                if (DCPhase > 315.0) {
                     DCPhase -= 360.0;
                 }
                 prevSine = sine;
@@ -355,13 +327,11 @@ namespace TALibrary
                 DCPeriodInt = (int)DCPeriod;
                 idx = today;
                 tempReal = 0.0;
-                for (i = 0; i < DCPeriodInt; i++)
-                {
+                for (i = 0; i < DCPeriodInt; i++) {
                     tempReal += inReal[idx];
                     idx--;
                 }
-                if (DCPeriodInt > 0)
-                {
+                if (DCPeriodInt > 0) {
                     tempReal /= (double)DCPeriodInt;
                 }
                 double trendline = ((((4.0 * tempReal) + (3.0 * iTrend1)) + (2.0 * iTrend2)) + iTrend3) / 10.0;
@@ -369,34 +339,28 @@ namespace TALibrary
                 iTrend2 = iTrend1;
                 iTrend1 = tempReal;
                 int trend = 1;
-                if (((sine > leadSine) && (prevSine <= prevLeadSine)) || ((sine < leadSine) && (prevSine >= prevLeadSine)))
-                {
+                if (((sine > leadSine) && (prevSine <= prevLeadSine)) || ((sine < leadSine) && (prevSine >= prevLeadSine))) {
                     daysInTrend = 0;
                     trend = 0;
                 }
                 daysInTrend++;
-                if (daysInTrend < (0.5 * smoothPeriod))
-                {
+                if (daysInTrend < (0.5 * smoothPeriod)) {
                     trend = 0;
                 }
                 tempReal = DCPhase - prevDCPhase;
-                if (((smoothPeriod != 0.0) && (tempReal > (241.20000000000002 / smoothPeriod))) && (tempReal < (540.0 / smoothPeriod)))
-                {
+                if (((smoothPeriod != 0.0) && (tempReal > (241.20000000000002 / smoothPeriod))) && (tempReal < (540.0 / smoothPeriod))) {
                     trend = 0;
                 }
                 tempReal = smoothPrice[smoothPrice_Idx];
-                if ((trendline != 0.0) && (Math.Abs((double)((tempReal - trendline) / trendline)) >= 0.015))
-                {
+                if ((trendline != 0.0) && (Math.Abs((double)((tempReal - trendline) / trendline)) >= 0.015)) {
                     trend = 1;
                 }
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outInteger[outIdx] = trend;
                     outIdx++;
                 }
                 smoothPrice_Idx++;
-                if (smoothPrice_Idx > maxIdx_smoothPrice)
-                {
+                if (smoothPrice_Idx > maxIdx_smoothPrice) {
                     smoothPrice_Idx = 0;
                 }
                 today++;
@@ -417,25 +381,20 @@ namespace TALibrary
             double[] jQ_Even = new double[3];
             int smoothPrice_Idx = 0;
             int maxIdx_smoothPrice = 0x31;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             double[] smoothPrice = new double[maxIdx_smoothPrice + 1];
-            if (smoothPrice == null)
-            {
+            if (smoothPrice == null) {
                 return RetCode.AllocErr;
             }
             double iTrend3 = 0.0;
@@ -453,12 +412,10 @@ namespace TALibrary
             double deg2Rad = 1.0 / rad2Deg;
             double constDeg2RadBy360 = tempReal * 8.0;
             int lookbackTotal = ((int)Globals.unstablePeriod[11]) + 0x3f;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -480,8 +437,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 0x22;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -551,19 +507,16 @@ namespace TALibrary
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double smoothPeriod = 0.0;
             i = 0;
-            while (i < 50)
-            {
+            while (i < 50) {
                 smoothPrice[i] = 0.0;
                 i++;
             }
             DCPhase = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     outNBElement = outIdx;
                     return RetCode.Success;
                 }
@@ -577,8 +530,7 @@ namespace TALibrary
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
                 smoothPrice[smoothPrice_Idx] = smoothedValue;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -616,8 +568,7 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
@@ -625,8 +576,7 @@ namespace TALibrary
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -673,26 +623,21 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 double tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
@@ -704,46 +649,37 @@ namespace TALibrary
                 double imagPart = 0.0;
                 int idx = smoothPrice_Idx;
                 i = 0;
-                while (i < DCPeriodInt)
-                {
+                while (i < DCPeriodInt) {
                     tempReal = (i * constDeg2RadBy360) / ((double)DCPeriodInt);
                     tempReal2 = smoothPrice[idx];
                     realPart += Math.Sin(tempReal) * tempReal2;
                     imagPart += Math.Cos(tempReal) * tempReal2;
-                    if (idx == 0)
-                    {
+                    if (idx == 0) {
                         idx = 0x31;
                     }
-                    else
-                    {
+                    else {
                         idx--;
                     }
                     i++;
                 }
                 tempReal = Math.Abs(imagPart);
-                if (tempReal > 0.0)
-                {
+                if (tempReal > 0.0) {
                     DCPhase = Math.Atan(realPart / imagPart) * rad2Deg;
                 }
-                else if (tempReal <= 0.01)
-                {
-                    if (realPart < 0.0)
-                    {
+                else if (tempReal <= 0.01) {
+                    if (realPart < 0.0) {
                         DCPhase -= 90.0;
                     }
-                    else if (realPart > 0.0)
-                    {
+                    else if (realPart > 0.0) {
                         DCPhase += 90.0;
                     }
                 }
                 DCPhase += 90.0;
                 DCPhase += 360.0 / smoothPeriod;
-                if (imagPart < 0.0)
-                {
+                if (imagPart < 0.0) {
                     DCPhase += 180.0;
                 }
-                if (DCPhase > 315.0)
-                {
+                if (DCPhase > 315.0) {
                     DCPhase -= 360.0;
                 }
                 prevSine = sine;
@@ -754,13 +690,11 @@ namespace TALibrary
                 DCPeriodInt = (int)DCPeriod;
                 idx = today;
                 tempReal = 0.0;
-                for (i = 0; i < DCPeriodInt; i++)
-                {
+                for (i = 0; i < DCPeriodInt; i++) {
                     tempReal += inReal[idx];
                     idx--;
                 }
-                if (DCPeriodInt > 0)
-                {
+                if (DCPeriodInt > 0) {
                     tempReal /= (double)DCPeriodInt;
                 }
                 double trendline = ((((4.0 * tempReal) + (3.0 * iTrend1)) + (2.0 * iTrend2)) + iTrend3) / 10.0;
@@ -768,34 +702,28 @@ namespace TALibrary
                 iTrend2 = iTrend1;
                 iTrend1 = tempReal;
                 int trend = 1;
-                if (((sine > leadSine) && (prevSine <= prevLeadSine)) || ((sine < leadSine) && (prevSine >= prevLeadSine)))
-                {
+                if (((sine > leadSine) && (prevSine <= prevLeadSine)) || ((sine < leadSine) && (prevSine >= prevLeadSine))) {
                     daysInTrend = 0;
                     trend = 0;
                 }
                 daysInTrend++;
-                if (daysInTrend < (0.5 * smoothPeriod))
-                {
+                if (daysInTrend < (0.5 * smoothPeriod)) {
                     trend = 0;
                 }
                 tempReal = DCPhase - prevDCPhase;
-                if (((smoothPeriod != 0.0) && (tempReal > (241.20000000000002 / smoothPeriod))) && (tempReal < (540.0 / smoothPeriod)))
-                {
+                if (((smoothPeriod != 0.0) && (tempReal > (241.20000000000002 / smoothPeriod))) && (tempReal < (540.0 / smoothPeriod))) {
                     trend = 0;
                 }
                 tempReal = smoothPrice[smoothPrice_Idx];
-                if ((trendline != 0.0) && (Math.Abs((double)((tempReal - trendline) / trendline)) >= 0.015))
-                {
+                if ((trendline != 0.0) && (Math.Abs((double)((tempReal - trendline) / trendline)) >= 0.015)) {
                     trend = 1;
                 }
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outInteger[outIdx] = trend;
                     outIdx++;
                 }
                 smoothPrice_Idx++;
-                if (smoothPrice_Idx > maxIdx_smoothPrice)
-                {
+                if (smoothPrice_Idx > maxIdx_smoothPrice) {
                     smoothPrice_Idx = 0;
                 }
                 today++;
@@ -805,5 +733,5 @@ namespace TALibrary
         {
             return (((int)Globals.unstablePeriod[11]) + 0x3f);
         }
-     }
+    }
 }

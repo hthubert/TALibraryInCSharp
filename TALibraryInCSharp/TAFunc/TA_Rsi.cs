@@ -1,51 +1,42 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Rsi(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             outBegIdx = 0;
             outNBElement = 0;
             int lookbackTotal = RsiLookback(optInTimePeriod);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx <= endIdx)
-            {
+            if (startIdx <= endIdx) {
                 double tempValue1;
                 double prevGain;
                 double prevLoss;
                 double tempValue2;
                 int i;
                 int outIdx = 0;
-                if (optInTimePeriod == 1)
-                {
+                if (optInTimePeriod == 1) {
                     outBegIdx = startIdx;
                     i = (endIdx - startIdx) + 1;
                     outNBElement = i;
@@ -54,41 +45,34 @@ namespace TALibrary
                 }
                 int today = startIdx - lookbackTotal;
                 double prevValue = inReal[today];
-                if ((Globals.unstablePeriod[20] == 0) && (Globals.compatibility == Compatibility.Metastock))
-                {
+                if ((Globals.unstablePeriod[20] == 0) && (Globals.compatibility == Compatibility.Metastock)) {
                     double savePrevValue = prevValue;
                     prevGain = 0.0;
                     prevLoss = 0.0;
-                    for (i = optInTimePeriod; i > 0; i--)
-                    {
+                    for (i = optInTimePeriod; i > 0; i--) {
                         tempValue1 = inReal[today];
                         today++;
                         tempValue2 = tempValue1 - prevValue;
                         prevValue = tempValue1;
-                        if (tempValue2 < 0.0)
-                        {
+                        if (tempValue2 < 0.0) {
                             prevLoss -= tempValue2;
                         }
-                        else
-                        {
+                        else {
                             prevGain += tempValue2;
                         }
                     }
                     tempValue1 = prevLoss / ((double)optInTimePeriod);
                     tempValue2 = prevGain / ((double)optInTimePeriod);
                     tempValue1 = tempValue2 + tempValue1;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (tempValue2 / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
-                    if (today > endIdx)
-                    {
+                    if (today > endIdx) {
                         outBegIdx = startIdx;
                         outNBElement = outIdx;
                         return RetCode.Success;
@@ -99,52 +83,42 @@ namespace TALibrary
                 prevGain = 0.0;
                 prevLoss = 0.0;
                 today++;
-                for (i = optInTimePeriod; i > 0; i--)
-                {
+                for (i = optInTimePeriod; i > 0; i--) {
                     tempValue1 = inReal[today];
                     today++;
                     tempValue2 = tempValue1 - prevValue;
                     prevValue = tempValue1;
-                    if (tempValue2 < 0.0)
-                    {
+                    if (tempValue2 < 0.0) {
                         prevLoss -= tempValue2;
                     }
-                    else
-                    {
+                    else {
                         prevGain += tempValue2;
                     }
                 }
                 prevLoss /= (double)optInTimePeriod;
                 prevGain /= (double)optInTimePeriod;
-                if (today > startIdx)
-                {
+                if (today > startIdx) {
                     tempValue1 = prevGain + prevLoss;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (prevGain / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
                 }
-                else
-                {
-                    while (today < startIdx)
-                    {
+                else {
+                    while (today < startIdx) {
                         tempValue1 = inReal[today];
                         tempValue2 = tempValue1 - prevValue;
                         prevValue = tempValue1;
                         prevLoss *= optInTimePeriod - 1;
                         prevGain *= optInTimePeriod - 1;
-                        if (tempValue2 < 0.0)
-                        {
+                        if (tempValue2 < 0.0) {
                             prevLoss -= tempValue2;
                         }
-                        else
-                        {
+                        else {
                             prevGain += tempValue2;
                         }
                         prevLoss /= (double)optInTimePeriod;
@@ -152,32 +126,27 @@ namespace TALibrary
                         today++;
                     }
                 }
-                while (today <= endIdx)
-                {
+                while (today <= endIdx) {
                     tempValue1 = inReal[today];
                     today++;
                     tempValue2 = tempValue1 - prevValue;
                     prevValue = tempValue1;
                     prevLoss *= optInTimePeriod - 1;
                     prevGain *= optInTimePeriod - 1;
-                    if (tempValue2 < 0.0)
-                    {
+                    if (tempValue2 < 0.0) {
                         prevLoss -= tempValue2;
                     }
-                    else
-                    {
+                    else {
                         prevGain += tempValue2;
                     }
                     prevLoss /= (double)optInTimePeriod;
                     prevGain /= (double)optInTimePeriod;
                     tempValue1 = prevGain + prevLoss;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (prevGain / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
@@ -189,47 +158,38 @@ namespace TALibrary
         }
         public static RetCode Rsi(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             outBegIdx = 0;
             outNBElement = 0;
             int lookbackTotal = RsiLookback(optInTimePeriod);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx <= endIdx)
-            {
+            if (startIdx <= endIdx) {
                 double tempValue1;
                 double prevGain;
                 double prevLoss;
                 double tempValue2;
                 int i;
                 int outIdx = 0;
-                if (optInTimePeriod == 1)
-                {
+                if (optInTimePeriod == 1) {
                     outBegIdx = startIdx;
                     i = (endIdx - startIdx) + 1;
                     outNBElement = i;
@@ -238,41 +198,34 @@ namespace TALibrary
                 }
                 int today = startIdx - lookbackTotal;
                 double prevValue = inReal[today];
-                if ((Globals.unstablePeriod[20] == 0) && (Globals.compatibility == Compatibility.Metastock))
-                {
+                if ((Globals.unstablePeriod[20] == 0) && (Globals.compatibility == Compatibility.Metastock)) {
                     double savePrevValue = prevValue;
                     prevGain = 0.0;
                     prevLoss = 0.0;
-                    for (i = optInTimePeriod; i > 0; i--)
-                    {
+                    for (i = optInTimePeriod; i > 0; i--) {
                         tempValue1 = inReal[today];
                         today++;
                         tempValue2 = tempValue1 - prevValue;
                         prevValue = tempValue1;
-                        if (tempValue2 < 0.0)
-                        {
+                        if (tempValue2 < 0.0) {
                             prevLoss -= tempValue2;
                         }
-                        else
-                        {
+                        else {
                             prevGain += tempValue2;
                         }
                     }
                     tempValue1 = prevLoss / ((double)optInTimePeriod);
                     tempValue2 = prevGain / ((double)optInTimePeriod);
                     tempValue1 = tempValue2 + tempValue1;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (tempValue2 / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
-                    if (today > endIdx)
-                    {
+                    if (today > endIdx) {
                         outBegIdx = startIdx;
                         outNBElement = outIdx;
                         return RetCode.Success;
@@ -283,52 +236,42 @@ namespace TALibrary
                 prevGain = 0.0;
                 prevLoss = 0.0;
                 today++;
-                for (i = optInTimePeriod; i > 0; i--)
-                {
+                for (i = optInTimePeriod; i > 0; i--) {
                     tempValue1 = inReal[today];
                     today++;
                     tempValue2 = tempValue1 - prevValue;
                     prevValue = tempValue1;
-                    if (tempValue2 < 0.0)
-                    {
+                    if (tempValue2 < 0.0) {
                         prevLoss -= tempValue2;
                     }
-                    else
-                    {
+                    else {
                         prevGain += tempValue2;
                     }
                 }
                 prevLoss /= (double)optInTimePeriod;
                 prevGain /= (double)optInTimePeriod;
-                if (today > startIdx)
-                {
+                if (today > startIdx) {
                     tempValue1 = prevGain + prevLoss;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (prevGain / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
                 }
-                else
-                {
-                    while (today < startIdx)
-                    {
+                else {
+                    while (today < startIdx) {
                         tempValue1 = inReal[today];
                         tempValue2 = tempValue1 - prevValue;
                         prevValue = tempValue1;
                         prevLoss *= optInTimePeriod - 1;
                         prevGain *= optInTimePeriod - 1;
-                        if (tempValue2 < 0.0)
-                        {
+                        if (tempValue2 < 0.0) {
                             prevLoss -= tempValue2;
                         }
-                        else
-                        {
+                        else {
                             prevGain += tempValue2;
                         }
                         prevLoss /= (double)optInTimePeriod;
@@ -336,32 +279,27 @@ namespace TALibrary
                         today++;
                     }
                 }
-                while (today <= endIdx)
-                {
+                while (today <= endIdx) {
                     tempValue1 = inReal[today];
                     today++;
                     tempValue2 = tempValue1 - prevValue;
                     prevValue = tempValue1;
                     prevLoss *= optInTimePeriod - 1;
                     prevGain *= optInTimePeriod - 1;
-                    if (tempValue2 < 0.0)
-                    {
+                    if (tempValue2 < 0.0) {
                         prevLoss -= tempValue2;
                     }
-                    else
-                    {
+                    else {
                         prevGain += tempValue2;
                     }
                     prevLoss /= (double)optInTimePeriod;
                     prevGain /= (double)optInTimePeriod;
                     tempValue1 = prevGain + prevLoss;
-                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08))
-                    {
+                    if ((-1E-08 >= tempValue1) || (tempValue1 >= 1E-08)) {
                         outReal[outIdx] = 100.0 * (prevGain / tempValue1);
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
@@ -373,20 +311,17 @@ namespace TALibrary
         }
         public static int RsiLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             int retValue = optInTimePeriod + ((int)Globals.unstablePeriod[20]);
-            if (Globals.compatibility == Compatibility.Metastock)
-            {
+            if (Globals.compatibility == Compatibility.Metastock) {
                 retValue--;
             }
             return retValue;
         }
-     }
+    }
 }

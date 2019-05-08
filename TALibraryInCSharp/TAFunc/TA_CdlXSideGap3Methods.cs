@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode CdlXSideGap3Methods(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
         {
             int num;
@@ -14,176 +14,137 @@ namespace TALibrary
             double num9;
             int num10;
             int num11;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = CdlXSideGap3MethodsLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int i = startIdx;
             int outIdx = 0;
-        Label_0063:
-            if (inClose[i - 1] >= inOpen[i - 1])
-            {
+            Label_0063:
+            if (inClose[i - 1] >= inOpen[i - 1]) {
                 num11 = 1;
             }
-            else
-            {
+            else {
                 num11 = -1;
             }
-            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != num11)
-            {
+            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != num11) {
                 goto Label_0229;
             }
-            if (inClose[i] >= inOpen[i])
-            {
+            if (inClose[i] >= inOpen[i]) {
                 num10 = 1;
             }
-            else
-            {
+            else {
                 num10 = -1;
             }
-            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) != -num10)
-            {
+            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) != -num10) {
                 goto Label_0229;
             }
-            if (inClose[i - 1] > inOpen[i - 1])
-            {
+            if (inClose[i - 1] > inOpen[i - 1]) {
                 num9 = inClose[i - 1];
             }
-            else
-            {
+            else {
                 num9 = inOpen[i - 1];
             }
-            if (inOpen[i] >= num9)
-            {
+            if (inOpen[i] >= num9) {
                 goto Label_0229;
             }
-            if (inClose[i - 1] < inOpen[i - 1])
-            {
+            if (inClose[i - 1] < inOpen[i - 1]) {
                 num8 = inClose[i - 1];
             }
-            else
-            {
+            else {
                 num8 = inOpen[i - 1];
             }
-            if (inOpen[i] <= num8)
-            {
+            if (inOpen[i] <= num8) {
                 goto Label_0229;
             }
-            if (inClose[i - 2] > inOpen[i - 2])
-            {
+            if (inClose[i - 2] > inOpen[i - 2]) {
                 num7 = inClose[i - 2];
             }
-            else
-            {
+            else {
                 num7 = inOpen[i - 2];
             }
-            if (inClose[i] >= num7)
-            {
+            if (inClose[i] >= num7) {
                 goto Label_0229;
             }
-            if (inClose[i - 2] < inOpen[i - 2])
-            {
+            if (inClose[i - 2] < inOpen[i - 2]) {
                 num6 = inClose[i - 2];
             }
-            else
-            {
+            else {
                 num6 = inOpen[i - 2];
             }
-            if (inClose[i] <= num6)
-            {
+            if (inClose[i] <= num6) {
                 goto Label_0229;
             }
-            if (inClose[i - 2] >= inOpen[i - 2])
-            {
+            if (inClose[i - 2] >= inOpen[i - 2]) {
                 double num4;
                 double num5;
-                if (inOpen[i - 1] < inClose[i - 1])
-                {
+                if (inOpen[i - 1] < inClose[i - 1]) {
                     num5 = inOpen[i - 1];
                 }
-                else
-                {
+                else {
                     num5 = inClose[i - 1];
                 }
-                if (inOpen[i - 2] > inClose[i - 2])
-                {
+                if (inOpen[i - 2] > inClose[i - 2]) {
                     num4 = inOpen[i - 2];
                 }
-                else
-                {
+                else {
                     num4 = inClose[i - 2];
                 }
-                if (num5 > num4)
-                {
+                if (num5 > num4) {
                     goto Label_0208;
                 }
             }
-            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != -1)
-            {
+            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != -1) {
                 goto Label_0229;
             }
-            if (inOpen[i - 1] > inClose[i - 1])
-            {
+            if (inOpen[i - 1] > inClose[i - 1]) {
                 num3 = inOpen[i - 1];
             }
-            else
-            {
+            else {
                 num3 = inClose[i - 1];
             }
-            if (inOpen[i - 2] < inClose[i - 2])
-            {
+            if (inOpen[i - 2] < inClose[i - 2]) {
                 num2 = inOpen[i - 2];
             }
-            else
-            {
+            else {
                 num2 = inClose[i - 2];
             }
-            if (num3 >= num2)
-            {
+            if (num3 >= num2) {
                 goto Label_0229;
             }
-        Label_0208:
-            if (inClose[i - 2] >= inOpen[i - 2])
-            {
+            Label_0208:
+            if (inClose[i - 2] >= inOpen[i - 2]) {
                 num = 1;
             }
-            else
-            {
+            else {
                 num = -1;
             }
             outInteger[outIdx] = num * 100;
             outIdx++;
             goto Label_0232;
-        Label_0229:
+            Label_0229:
             outInteger[outIdx] = 0;
             outIdx++;
-        Label_0232:
+            Label_0232:
             i++;
-            if (i <= endIdx)
-            {
+            if (i <= endIdx) {
                 goto Label_0063;
             }
             outNBElement = outIdx;
@@ -201,176 +162,137 @@ namespace TALibrary
             float num9;
             int num10;
             int num11;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = CdlXSideGap3MethodsLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int i = startIdx;
             int outIdx = 0;
-        Label_0063:
-            if (inClose[i - 1] >= inOpen[i - 1])
-            {
+            Label_0063:
+            if (inClose[i - 1] >= inOpen[i - 1]) {
                 num11 = 1;
             }
-            else
-            {
+            else {
                 num11 = -1;
             }
-            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != num11)
-            {
+            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != num11) {
                 goto Label_0263;
             }
-            if (inClose[i] >= inOpen[i])
-            {
+            if (inClose[i] >= inOpen[i]) {
                 num10 = 1;
             }
-            else
-            {
+            else {
                 num10 = -1;
             }
-            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) != -num10)
-            {
+            if (((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) != -num10) {
                 goto Label_0263;
             }
-            if (inClose[i - 1] > inOpen[i - 1])
-            {
+            if (inClose[i - 1] > inOpen[i - 1]) {
                 num9 = inClose[i - 1];
             }
-            else
-            {
+            else {
                 num9 = inOpen[i - 1];
             }
-            if (inOpen[i] >= num9)
-            {
+            if (inOpen[i] >= num9) {
                 goto Label_0263;
             }
-            if (inClose[i - 1] < inOpen[i - 1])
-            {
+            if (inClose[i - 1] < inOpen[i - 1]) {
                 num8 = inClose[i - 1];
             }
-            else
-            {
+            else {
                 num8 = inOpen[i - 1];
             }
-            if (inOpen[i] <= num8)
-            {
+            if (inOpen[i] <= num8) {
                 goto Label_0263;
             }
-            if (inClose[i - 2] > inOpen[i - 2])
-            {
+            if (inClose[i - 2] > inOpen[i - 2]) {
                 num7 = inClose[i - 2];
             }
-            else
-            {
+            else {
                 num7 = inOpen[i - 2];
             }
-            if (inClose[i] >= num7)
-            {
+            if (inClose[i] >= num7) {
                 goto Label_0263;
             }
-            if (inClose[i - 2] < inOpen[i - 2])
-            {
+            if (inClose[i - 2] < inOpen[i - 2]) {
                 num6 = inClose[i - 2];
             }
-            else
-            {
+            else {
                 num6 = inOpen[i - 2];
             }
-            if (inClose[i] <= num6)
-            {
+            if (inClose[i] <= num6) {
                 goto Label_0263;
             }
-            if (inClose[i - 2] >= inOpen[i - 2])
-            {
+            if (inClose[i - 2] >= inOpen[i - 2]) {
                 float num4;
                 float num5;
-                if (inOpen[i - 1] < inClose[i - 1])
-                {
+                if (inOpen[i - 1] < inClose[i - 1]) {
                     num5 = inOpen[i - 1];
                 }
-                else
-                {
+                else {
                     num5 = inClose[i - 1];
                 }
-                if (inOpen[i - 2] > inClose[i - 2])
-                {
+                if (inOpen[i - 2] > inClose[i - 2]) {
                     num4 = inOpen[i - 2];
                 }
-                else
-                {
+                else {
                     num4 = inClose[i - 2];
                 }
-                if (num5 > num4)
-                {
+                if (num5 > num4) {
                     goto Label_0240;
                 }
             }
-            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != -1)
-            {
+            if (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) != -1) {
                 goto Label_0263;
             }
-            if (inOpen[i - 1] > inClose[i - 1])
-            {
+            if (inOpen[i - 1] > inClose[i - 1]) {
                 num3 = inOpen[i - 1];
             }
-            else
-            {
+            else {
                 num3 = inClose[i - 1];
             }
-            if (inOpen[i - 2] < inClose[i - 2])
-            {
+            if (inOpen[i - 2] < inClose[i - 2]) {
                 num2 = inOpen[i - 2];
             }
-            else
-            {
+            else {
                 num2 = inClose[i - 2];
             }
-            if (num3 >= num2)
-            {
+            if (num3 >= num2) {
                 goto Label_0263;
             }
-        Label_0240:
-            if (inClose[i - 2] >= inOpen[i - 2])
-            {
+            Label_0240:
+            if (inClose[i - 2] >= inOpen[i - 2]) {
                 num = 1;
             }
-            else
-            {
+            else {
                 num = -1;
             }
             outInteger[outIdx] = num * 100;
             outIdx++;
             goto Label_026C;
-        Label_0263:
+            Label_0263:
             outInteger[outIdx] = 0;
             outIdx++;
-        Label_026C:
+            Label_026C:
             i++;
-            if (i <= endIdx)
-            {
+            if (i <= endIdx) {
                 goto Label_0063;
             }
             outNBElement = outIdx;
@@ -381,5 +303,5 @@ namespace TALibrary
         {
             return 2;
         }
-     }
+    }
 }

@@ -1,50 +1,40 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode T3(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, double optInVFactor, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             int i;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (optInVFactor == -4E+37)
-            {
+            if (optInVFactor == -4E+37) {
                 optInVFactor = 0.7;
             }
-            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0))
-            {
+            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = ((optInTimePeriod - 1) * 6) + ((int)Globals.unstablePeriod[0x16]);
-            if (startIdx <= lookbackTotal)
-            {
+            if (startIdx <= lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outNBElement = 0;
                 outBegIdx = 0;
                 return RetCode.Success;
@@ -55,23 +45,20 @@ namespace TALibrary
             double one_minus_k = 1.0 - k;
             double tempReal = inReal[today];
             today++;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 tempReal += inReal[today];
                 today++;
             }
             double e1 = tempReal / ((double)optInTimePeriod);
             tempReal = e1;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 tempReal += e1;
             }
             double e2 = tempReal / ((double)optInTimePeriod);
             tempReal = e2;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -79,8 +66,7 @@ namespace TALibrary
             }
             double e3 = tempReal / ((double)optInTimePeriod);
             tempReal = e3;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -89,8 +75,7 @@ namespace TALibrary
             }
             double e4 = tempReal / ((double)optInTimePeriod);
             tempReal = e4;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -100,8 +85,7 @@ namespace TALibrary
             }
             double e5 = tempReal / ((double)optInTimePeriod);
             tempReal = e5;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -111,10 +95,8 @@ namespace TALibrary
                 tempReal += e5;
             }
             double e6 = tempReal / ((double)optInTimePeriod);
-            while (true)
-            {
-                if (today > startIdx)
-                {
+            while (true) {
+                if (today > startIdx) {
                     break;
                 }
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
@@ -133,10 +115,8 @@ namespace TALibrary
             int outIdx = 0;
             outReal[outIdx] = (((c1 * e6) + (c2 * e5)) + (c3 * e4)) + (c4 * e3);
             outIdx++;
-            while (true)
-            {
-                if (today > endIdx)
-                {
+            while (true) {
+                if (today > endIdx) {
                     break;
                 }
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
@@ -155,45 +135,35 @@ namespace TALibrary
         public static RetCode T3(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, double optInVFactor, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             int i;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (optInVFactor == -4E+37)
-            {
+            if (optInVFactor == -4E+37) {
                 optInVFactor = 0.7;
             }
-            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0))
-            {
+            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = ((optInTimePeriod - 1) * 6) + ((int)Globals.unstablePeriod[0x16]);
-            if (startIdx <= lookbackTotal)
-            {
+            if (startIdx <= lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outNBElement = 0;
                 outBegIdx = 0;
                 return RetCode.Success;
@@ -204,23 +174,20 @@ namespace TALibrary
             double one_minus_k = 1.0 - k;
             double tempReal = inReal[today];
             today++;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 tempReal += inReal[today];
                 today++;
             }
             double e1 = tempReal / ((double)optInTimePeriod);
             tempReal = e1;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 tempReal += e1;
             }
             double e2 = tempReal / ((double)optInTimePeriod);
             tempReal = e2;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -228,8 +195,7 @@ namespace TALibrary
             }
             double e3 = tempReal / ((double)optInTimePeriod);
             tempReal = e3;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -238,8 +204,7 @@ namespace TALibrary
             }
             double e4 = tempReal / ((double)optInTimePeriod);
             tempReal = e4;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -249,8 +214,7 @@ namespace TALibrary
             }
             double e5 = tempReal / ((double)optInTimePeriod);
             tempReal = e5;
-            for (i = optInTimePeriod - 1; i > 0; i--)
-            {
+            for (i = optInTimePeriod - 1; i > 0; i--) {
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
                 today++;
                 e2 = (k * e1) + (one_minus_k * e2);
@@ -260,10 +224,8 @@ namespace TALibrary
                 tempReal += e5;
             }
             double e6 = tempReal / ((double)optInTimePeriod);
-            while (true)
-            {
-                if (today > startIdx)
-                {
+            while (true) {
+                if (today > startIdx) {
                     break;
                 }
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
@@ -282,10 +244,8 @@ namespace TALibrary
             int outIdx = 0;
             outReal[outIdx] = (((c1 * e6) + (c2 * e5)) + (c3 * e4)) + (c4 * e3);
             outIdx++;
-            while (true)
-            {
-                if (today > endIdx)
-                {
+            while (true) {
+                if (today > endIdx) {
                     break;
                 }
                 e1 = (k * inReal[today]) + (one_minus_k * e1);
@@ -303,23 +263,19 @@ namespace TALibrary
         }
         public static int T3Lookback(int optInTimePeriod, double optInVFactor)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 5;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
-            if (optInVFactor == -4E+37)
-            {
+            if (optInVFactor == -4E+37) {
                 optInVFactor = 0.7;
             }
-            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0))
-            {
+            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0)) {
                 return -1;
             }
             return (((optInTimePeriod - 1) * 6) + ((int)Globals.unstablePeriod[0x16]));
         }
-     }
+    }
 }

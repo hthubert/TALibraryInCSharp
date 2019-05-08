@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode MinusDI(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double tempReal;
@@ -14,51 +14,40 @@ namespace TALibrary
             double prevClose;
             double diffP;
             int lookbackTotal;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inHigh == null) || (inLow == null)) || (inClose == null))
-            {
+            if (((inHigh == null) || (inLow == null)) || (inClose == null)) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod > 1)
-            {
+            if (optInTimePeriod > 1) {
                 lookbackTotal = optInTimePeriod + ((int)Globals.unstablePeriod[15]);
             }
-            else
-            {
+            else {
                 lookbackTotal = 1;
             }
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int outIdx = 0;
-            if (optInTimePeriod > 1)
-            {
+            if (optInTimePeriod > 1) {
                 today = startIdx;
                 outBegIdx = today;
                 double prevMinusDM = 0.0;
@@ -68,17 +57,13 @@ namespace TALibrary
                 prevLow = inLow[today];
                 prevClose = inClose[today];
                 int i = optInTimePeriod - 1;
-                while (true)
-                {
+                while (true) {
                     i--;
-                    if (i <= 0)
-                    {
+                    if (i <= 0) {
                         i = ((int)Globals.unstablePeriod[15]) + 1;
-                        while (true)
-                        {
+                        while (true) {
                             i--;
-                            if (i == 0)
-                            {
+                            if (i == 0) {
                                 break;
                             }
                             today++;
@@ -88,39 +73,32 @@ namespace TALibrary
                             tempReal = inLow[today];
                             diffM = prevLow - tempReal;
                             prevLow = tempReal;
-                            if ((diffM > 0.0) && (diffP < diffM))
-                            {
+                            if ((diffM > 0.0) && (diffP < diffM)) {
                                 prevMinusDM = (prevMinusDM - (prevMinusDM / ((double)optInTimePeriod))) + diffM;
                             }
-                            else
-                            {
+                            else {
                                 prevMinusDM -= prevMinusDM / ((double)optInTimePeriod);
                             }
                             tempReal = prevHigh - prevLow;
                             tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             prevTR = (prevTR - (prevTR / ((double)optInTimePeriod))) + tempReal;
                             prevClose = inClose[today];
                         }
-                        if ((-1E-08 >= prevTR) || (prevTR >= 1E-08))
-                        {
+                        if ((-1E-08 >= prevTR) || (prevTR >= 1E-08)) {
                             outReal[0] = 100.0 * (prevMinusDM / prevTR);
                         }
-                        else
-                        {
+                        else {
                             outReal[0] = 0.0;
                         }
                         outIdx = 1;
-                        while (today < endIdx)
-                        {
+                        while (today < endIdx) {
                             today++;
                             tempReal = inHigh[today];
                             diffP = tempReal - prevHigh;
@@ -128,34 +106,28 @@ namespace TALibrary
                             tempReal = inLow[today];
                             diffM = prevLow - tempReal;
                             prevLow = tempReal;
-                            if ((diffM > 0.0) && (diffP < diffM))
-                            {
+                            if ((diffM > 0.0) && (diffP < diffM)) {
                                 prevMinusDM = (prevMinusDM - (prevMinusDM / ((double)optInTimePeriod))) + diffM;
                             }
-                            else
-                            {
+                            else {
                                 prevMinusDM -= prevMinusDM / ((double)optInTimePeriod);
                             }
                             tempReal = prevHigh - prevLow;
                             tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             prevTR = (prevTR - (prevTR / ((double)optInTimePeriod))) + tempReal;
                             prevClose = inClose[today];
-                            if ((-1E-08 >= prevTR) || (prevTR >= 1E-08))
-                            {
+                            if ((-1E-08 >= prevTR) || (prevTR >= 1E-08)) {
                                 outReal[outIdx] = 100.0 * (prevMinusDM / prevTR);
                                 outIdx++;
                             }
-                            else
-                            {
+                            else {
                                 outReal[outIdx] = 0.0;
                                 outIdx++;
                             }
@@ -170,19 +142,16 @@ namespace TALibrary
                     tempReal = inLow[today];
                     diffM = prevLow - tempReal;
                     prevLow = tempReal;
-                    if ((diffM > 0.0) && (diffP < diffM))
-                    {
+                    if ((diffM > 0.0) && (diffP < diffM)) {
                         prevMinusDM += diffM;
                     }
                     tempReal = prevHigh - prevLow;
                     tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     prevTR += tempReal;
@@ -194,10 +163,8 @@ namespace TALibrary
             prevHigh = inHigh[today];
             prevLow = inLow[today];
             prevClose = inClose[today];
-            while (true)
-            {
-                if (today >= endIdx)
-                {
+            while (true) {
+                if (today >= endIdx) {
                     break;
                 }
                 today++;
@@ -207,32 +174,26 @@ namespace TALibrary
                 tempReal = inLow[today];
                 diffM = prevLow - tempReal;
                 prevLow = tempReal;
-                if ((diffM > 0.0) && (diffP < diffM))
-                {
+                if ((diffM > 0.0) && (diffP < diffM)) {
                     tempReal = prevHigh - prevLow;
                     tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
-                    if ((-1E-08 < tempReal) && (tempReal < 1E-08))
-                    {
+                    if ((-1E-08 < tempReal) && (tempReal < 1E-08)) {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = diffM / tempReal;
                         outIdx++;
                     }
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -252,51 +213,40 @@ namespace TALibrary
             double prevClose;
             double diffP;
             int lookbackTotal;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inHigh == null) || (inLow == null)) || (inClose == null))
-            {
+            if (((inHigh == null) || (inLow == null)) || (inClose == null)) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod > 1)
-            {
+            if (optInTimePeriod > 1) {
                 lookbackTotal = optInTimePeriod + ((int)Globals.unstablePeriod[15]);
             }
-            else
-            {
+            else {
                 lookbackTotal = 1;
             }
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int outIdx = 0;
-            if (optInTimePeriod > 1)
-            {
+            if (optInTimePeriod > 1) {
                 today = startIdx;
                 outBegIdx = today;
                 double prevMinusDM = 0.0;
@@ -306,17 +256,13 @@ namespace TALibrary
                 prevLow = inLow[today];
                 prevClose = inClose[today];
                 int i = optInTimePeriod - 1;
-                while (true)
-                {
+                while (true) {
                     i--;
-                    if (i <= 0)
-                    {
+                    if (i <= 0) {
                         i = ((int)Globals.unstablePeriod[15]) + 1;
-                        while (true)
-                        {
+                        while (true) {
                             i--;
-                            if (i == 0)
-                            {
+                            if (i == 0) {
                                 break;
                             }
                             today++;
@@ -326,39 +272,32 @@ namespace TALibrary
                             tempReal = inLow[today];
                             diffM = prevLow - tempReal;
                             prevLow = tempReal;
-                            if ((diffM > 0.0) && (diffP < diffM))
-                            {
+                            if ((diffM > 0.0) && (diffP < diffM)) {
                                 prevMinusDM = (prevMinusDM - (prevMinusDM / ((double)optInTimePeriod))) + diffM;
                             }
-                            else
-                            {
+                            else {
                                 prevMinusDM -= prevMinusDM / ((double)optInTimePeriod);
                             }
                             tempReal = prevHigh - prevLow;
                             tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             prevTR = (prevTR - (prevTR / ((double)optInTimePeriod))) + tempReal;
                             prevClose = inClose[today];
                         }
-                        if ((-1E-08 >= prevTR) || (prevTR >= 1E-08))
-                        {
+                        if ((-1E-08 >= prevTR) || (prevTR >= 1E-08)) {
                             outReal[0] = 100.0 * (prevMinusDM / prevTR);
                         }
-                        else
-                        {
+                        else {
                             outReal[0] = 0.0;
                         }
                         outIdx = 1;
-                        while (today < endIdx)
-                        {
+                        while (today < endIdx) {
                             today++;
                             tempReal = inHigh[today];
                             diffP = tempReal - prevHigh;
@@ -366,34 +305,28 @@ namespace TALibrary
                             tempReal = inLow[today];
                             diffM = prevLow - tempReal;
                             prevLow = tempReal;
-                            if ((diffM > 0.0) && (diffP < diffM))
-                            {
+                            if ((diffM > 0.0) && (diffP < diffM)) {
                                 prevMinusDM = (prevMinusDM - (prevMinusDM / ((double)optInTimePeriod))) + diffM;
                             }
-                            else
-                            {
+                            else {
                                 prevMinusDM -= prevMinusDM / ((double)optInTimePeriod);
                             }
                             tempReal = prevHigh - prevLow;
                             tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                            if (tempReal2 > tempReal)
-                            {
+                            if (tempReal2 > tempReal) {
                                 tempReal = tempReal2;
                             }
                             prevTR = (prevTR - (prevTR / ((double)optInTimePeriod))) + tempReal;
                             prevClose = inClose[today];
-                            if ((-1E-08 >= prevTR) || (prevTR >= 1E-08))
-                            {
+                            if ((-1E-08 >= prevTR) || (prevTR >= 1E-08)) {
                                 outReal[outIdx] = 100.0 * (prevMinusDM / prevTR);
                                 outIdx++;
                             }
-                            else
-                            {
+                            else {
                                 outReal[outIdx] = 0.0;
                                 outIdx++;
                             }
@@ -408,19 +341,16 @@ namespace TALibrary
                     tempReal = inLow[today];
                     diffM = prevLow - tempReal;
                     prevLow = tempReal;
-                    if ((diffM > 0.0) && (diffP < diffM))
-                    {
+                    if ((diffM > 0.0) && (diffP < diffM)) {
                         prevMinusDM += diffM;
                     }
                     tempReal = prevHigh - prevLow;
                     tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     prevTR += tempReal;
@@ -432,10 +362,8 @@ namespace TALibrary
             prevHigh = inHigh[today];
             prevLow = inLow[today];
             prevClose = inClose[today];
-            while (true)
-            {
-                if (today >= endIdx)
-                {
+            while (true) {
+                if (today >= endIdx) {
                     break;
                 }
                 today++;
@@ -445,32 +373,26 @@ namespace TALibrary
                 tempReal = inLow[today];
                 diffM = prevLow - tempReal;
                 prevLow = tempReal;
-                if ((diffM > 0.0) && (diffP < diffM))
-                {
+                if ((diffM > 0.0) && (diffP < diffM)) {
                     tempReal = prevHigh - prevLow;
                     tempReal2 = Math.Abs((double)(prevHigh - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
                     tempReal2 = Math.Abs((double)(prevLow - prevClose));
-                    if (tempReal2 > tempReal)
-                    {
+                    if (tempReal2 > tempReal) {
                         tempReal = tempReal2;
                     }
-                    if ((-1E-08 < tempReal) && (tempReal < 1E-08))
-                    {
+                    if ((-1E-08 < tempReal) && (tempReal < 1E-08)) {
                         outReal[outIdx] = 0.0;
                         outIdx++;
                     }
-                    else
-                    {
+                    else {
                         outReal[outIdx] = diffM / tempReal;
                         outIdx++;
                     }
                 }
-                else
-                {
+                else {
                     outReal[outIdx] = 0.0;
                     outIdx++;
                 }
@@ -481,19 +403,16 @@ namespace TALibrary
         }
         public static int MinusDILookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 14;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
-            if (optInTimePeriod > 1)
-            {
+            if (optInTimePeriod > 1) {
                 return (optInTimePeriod + ((int)Globals.unstablePeriod[15]));
             }
             return 1;
         }
-     }
+    }
 }

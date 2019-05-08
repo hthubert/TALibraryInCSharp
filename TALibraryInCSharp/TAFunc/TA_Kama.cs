@@ -1,46 +1,38 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Kama(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double tempReal;
             const double constMax = 0.064516129032258063;
             const double constDiff = 0.66666666666666663 - constMax;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             outBegIdx = 0;
             outNBElement = 0;
             int lookbackTotal = optInTimePeriod + ((int)Globals.unstablePeriod[12]);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -49,11 +41,9 @@ namespace TALibrary
             int today = startIdx - lookbackTotal;
             int trailingIdx = today;
             int i = optInTimePeriod;
-            while (true)
-            {
+            while (true) {
                 i--;
-                if (i <= 0)
-                {
+                if (i <= 0) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -67,22 +57,18 @@ namespace TALibrary
             trailingIdx++;
             double periodROC = tempReal - tempReal2;
             double trailingValue = tempReal2;
-            if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-            {
+            if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                 tempReal = 1.0;
             }
-            else
-            {
+            else {
                 tempReal = Math.Abs((double)(periodROC / sumROC1));
             }
             tempReal = (tempReal * constDiff) + constMax;
             tempReal *= tempReal;
             prevKAMA = ((inReal[today] - prevKAMA) * tempReal) + prevKAMA;
             today++;
-            while (true)
-            {
-                if (today > startIdx)
-                {
+            while (true) {
+                if (today > startIdx) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -92,12 +78,10 @@ namespace TALibrary
                 sumROC1 -= Math.Abs((double)(trailingValue - tempReal2));
                 sumROC1 += Math.Abs((double)(tempReal - inReal[today - 1]));
                 trailingValue = tempReal2;
-                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-                {
+                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                     tempReal = 1.0;
                 }
-                else
-                {
+                else {
                     tempReal = Math.Abs((double)(periodROC / sumROC1));
                 }
                 tempReal = (tempReal * constDiff) + constMax;
@@ -108,10 +92,8 @@ namespace TALibrary
             outReal[0] = prevKAMA;
             int outIdx = 1;
             outBegIdx = today - 1;
-            while (true)
-            {
-                if (today > endIdx)
-                {
+            while (true) {
+                if (today > endIdx) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -121,12 +103,10 @@ namespace TALibrary
                 sumROC1 -= Math.Abs((double)(trailingValue - tempReal2));
                 sumROC1 += Math.Abs((double)(tempReal - inReal[today - 1]));
                 trailingValue = tempReal2;
-                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-                {
+                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                     tempReal = 1.0;
                 }
-                else
-                {
+                else {
                     tempReal = Math.Abs((double)(periodROC / sumROC1));
                 }
                 tempReal = (tempReal * constDiff) + constMax;
@@ -144,39 +124,31 @@ namespace TALibrary
             double tempReal;
             const double constMax = 0.064516129032258063;
             const double constDiff = 0.66666666666666663 - constMax;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             outBegIdx = 0;
             outNBElement = 0;
             int lookbackTotal = optInTimePeriod + ((int)Globals.unstablePeriod[12]);
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -185,11 +157,9 @@ namespace TALibrary
             int today = startIdx - lookbackTotal;
             int trailingIdx = today;
             int i = optInTimePeriod;
-            while (true)
-            {
+            while (true) {
                 i--;
-                if (i <= 0)
-                {
+                if (i <= 0) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -203,22 +173,18 @@ namespace TALibrary
             trailingIdx++;
             double periodROC = tempReal - tempReal2;
             double trailingValue = tempReal2;
-            if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-            {
+            if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                 tempReal = 1.0;
             }
-            else
-            {
+            else {
                 tempReal = Math.Abs((double)(periodROC / sumROC1));
             }
             tempReal = (tempReal * constDiff) + constMax;
             tempReal *= tempReal;
             prevKAMA = ((inReal[today] - prevKAMA) * tempReal) + prevKAMA;
             today++;
-            while (true)
-            {
-                if (today > startIdx)
-                {
+            while (true) {
+                if (today > startIdx) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -228,12 +194,10 @@ namespace TALibrary
                 sumROC1 -= Math.Abs((double)(trailingValue - tempReal2));
                 sumROC1 += Math.Abs((double)(tempReal - inReal[today - 1]));
                 trailingValue = tempReal2;
-                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-                {
+                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                     tempReal = 1.0;
                 }
-                else
-                {
+                else {
                     tempReal = Math.Abs((double)(periodROC / sumROC1));
                 }
                 tempReal = (tempReal * constDiff) + constMax;
@@ -244,10 +208,8 @@ namespace TALibrary
             outReal[0] = prevKAMA;
             int outIdx = 1;
             outBegIdx = today - 1;
-            while (true)
-            {
-                if (today > endIdx)
-                {
+            while (true) {
+                if (today > endIdx) {
                     break;
                 }
                 tempReal = inReal[today];
@@ -257,12 +219,10 @@ namespace TALibrary
                 sumROC1 -= Math.Abs((double)(trailingValue - tempReal2));
                 sumROC1 += Math.Abs((double)(tempReal - inReal[today - 1]));
                 trailingValue = tempReal2;
-                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08)))
-                {
+                if ((sumROC1 <= periodROC) || ((-1E-08 < sumROC1) && (sumROC1 < 1E-08))) {
                     tempReal = 1.0;
                 }
-                else
-                {
+                else {
                     tempReal = Math.Abs((double)(periodROC / sumROC1));
                 }
                 tempReal = (tempReal * constDiff) + constMax;
@@ -277,15 +237,13 @@ namespace TALibrary
         }
         public static int KamaLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return (optInTimePeriod + ((int)Globals.unstablePeriod[12]));
         }
-     }
+    }
 }

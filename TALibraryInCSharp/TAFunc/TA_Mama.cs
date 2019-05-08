@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Mama(int startIdx, int endIdx, double[] inReal, double optInFastLimit, double optInSlowLimit, ref int outBegIdx, ref int outNBElement, double[] outMAMA, double[] outFAMA)
         {
             double smoothedValue;
@@ -16,50 +16,39 @@ namespace TALibrary
             double[] jI_Even = new double[3];
             double[] jQ_Odd = new double[3];
             double[] jQ_Even = new double[3];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInFastLimit == -4E+37)
-            {
+            if (optInFastLimit == -4E+37) {
                 optInFastLimit = 0.5;
             }
-            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99))
-            {
+            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99)) {
                 return RetCode.BadParam;
             }
-            if (optInSlowLimit == -4E+37)
-            {
+            if (optInSlowLimit == -4E+37) {
                 optInSlowLimit = 0.05;
             }
-            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99))
-            {
+            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99)) {
                 return RetCode.BadParam;
             }
-            if (outMAMA == null)
-            {
+            if (outMAMA == null) {
                 return RetCode.BadParam;
             }
-            if (outFAMA == null)
-            {
+            if (outFAMA == null) {
                 return RetCode.BadParam;
             }
             double rad2Deg = 180.0 / (4.0 * Math.Atan(1.0));
             int lookbackTotal = ((int)Globals.unstablePeriod[13]) + 0x20;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -81,8 +70,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 9;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -153,14 +141,12 @@ namespace TALibrary
             double I1ForEvenPrev2 = 0.0;
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double prevPhase = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double tempReal2;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     break;
                 }
                 double adjustedPrevPeriod = (0.075 * period) + 0.54;
@@ -172,8 +158,7 @@ namespace TALibrary
                 trailingWMAIdx++;
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -211,25 +196,21 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
                     I2 = (0.2 * (I1ForEvenPrev3 - jQ)) + (0.8 * prevI2);
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
-                    if (I1ForEvenPrev3 != 0.0)
-                    {
+                    if (I1ForEvenPrev3 != 0.0) {
                         tempReal2 = Math.Atan(Q1 / I1ForEvenPrev3) * rad2Deg;
                     }
-                    else
-                    {
+                    else {
                         tempReal2 = 0.0;
                     }
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -270,38 +251,31 @@ namespace TALibrary
                     I2 = (0.2 * (I1ForOddPrev3 - jQ)) + (0.8 * prevI2);
                     I1ForEvenPrev3 = I1ForEvenPrev2;
                     I1ForEvenPrev2 = detrender;
-                    if (I1ForOddPrev3 != 0.0)
-                    {
+                    if (I1ForOddPrev3 != 0.0) {
                         tempReal2 = Math.Atan(Q1 / I1ForOddPrev3) * rad2Deg;
                     }
-                    else
-                    {
+                    else {
                         tempReal2 = 0.0;
                     }
                 }
                 tempReal = prevPhase - tempReal2;
                 prevPhase = tempReal2;
-                if (tempReal < 1.0)
-                {
+                if (tempReal < 1.0) {
                     tempReal = 1.0;
                 }
-                if (tempReal > 1.0)
-                {
+                if (tempReal > 1.0) {
                     tempReal = optInFastLimit / tempReal;
-                    if (tempReal < optInSlowLimit)
-                    {
+                    if (tempReal < optInSlowLimit) {
                         tempReal = optInSlowLimit;
                     }
                 }
-                else
-                {
+                else {
                     tempReal = optInFastLimit;
                 }
                 mama = (tempReal * todayValue) + ((1.0 - tempReal) * mama);
                 tempReal *= 0.5;
                 fama = (tempReal * mama) + ((1.0 - tempReal) * fama);
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outMAMA[outIdx] = mama;
                     outFAMA[outIdx] = fama;
                     outIdx++;
@@ -311,26 +285,21 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
@@ -352,50 +321,39 @@ namespace TALibrary
             double[] jI_Even = new double[3];
             double[] jQ_Odd = new double[3];
             double[] jQ_Even = new double[3];
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInFastLimit == -4E+37)
-            {
+            if (optInFastLimit == -4E+37) {
                 optInFastLimit = 0.5;
             }
-            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99))
-            {
+            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99)) {
                 return RetCode.BadParam;
             }
-            if (optInSlowLimit == -4E+37)
-            {
+            if (optInSlowLimit == -4E+37) {
                 optInSlowLimit = 0.05;
             }
-            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99))
-            {
+            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99)) {
                 return RetCode.BadParam;
             }
-            if (outMAMA == null)
-            {
+            if (outMAMA == null) {
                 return RetCode.BadParam;
             }
-            if (outFAMA == null)
-            {
+            if (outFAMA == null) {
                 return RetCode.BadParam;
             }
             double rad2Deg = 180.0 / (4.0 * Math.Atan(1.0));
             int lookbackTotal = ((int)Globals.unstablePeriod[13]) + 0x20;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
@@ -417,8 +375,7 @@ namespace TALibrary
             periodWMASum += tempReal * 3.0;
             double trailingWMAValue = 0.0;
             int i = 9;
-            do
-            {
+            do {
                 tempReal = inReal[today];
                 today++;
                 periodWMASub += tempReal;
@@ -489,14 +446,12 @@ namespace TALibrary
             double I1ForEvenPrev2 = 0.0;
             double I1ForOddPrev2 = I1ForEvenPrev2;
             double prevPhase = 0.0;
-            while (true)
-            {
+            while (true) {
                 double hilbertTempReal;
                 double tempReal2;
                 double I2;
                 double Q2;
-                if (today > endIdx)
-                {
+                if (today > endIdx) {
                     break;
                 }
                 double adjustedPrevPeriod = (0.075 * period) + 0.54;
@@ -508,8 +463,7 @@ namespace TALibrary
                 trailingWMAIdx++;
                 smoothedValue = periodWMASum * 0.1;
                 periodWMASum -= periodWMASub;
-                if ((today % 2) == 0)
-                {
+                if ((today % 2) == 0) {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Even[hilbertIdx];
                     detrender_Even[hilbertIdx] = hilbertTempReal;
@@ -547,25 +501,21 @@ namespace TALibrary
                     prev_jQ_input_Even = Q1;
                     jQ *= adjustedPrevPeriod;
                     hilbertIdx++;
-                    if (hilbertIdx == 3)
-                    {
+                    if (hilbertIdx == 3) {
                         hilbertIdx = 0;
                     }
                     Q2 = (0.2 * (Q1 + jI)) + (0.8 * prevQ2);
                     I2 = (0.2 * (I1ForEvenPrev3 - jQ)) + (0.8 * prevI2);
                     I1ForOddPrev3 = I1ForOddPrev2;
                     I1ForOddPrev2 = detrender;
-                    if (I1ForEvenPrev3 != 0.0)
-                    {
+                    if (I1ForEvenPrev3 != 0.0) {
                         tempReal2 = Math.Atan(Q1 / I1ForEvenPrev3) * rad2Deg;
                     }
-                    else
-                    {
+                    else {
                         tempReal2 = 0.0;
                     }
                 }
-                else
-                {
+                else {
                     hilbertTempReal = a * smoothedValue;
                     detrender = -detrender_Odd[hilbertIdx];
                     detrender_Odd[hilbertIdx] = hilbertTempReal;
@@ -606,38 +556,31 @@ namespace TALibrary
                     I2 = (0.2 * (I1ForOddPrev3 - jQ)) + (0.8 * prevI2);
                     I1ForEvenPrev3 = I1ForEvenPrev2;
                     I1ForEvenPrev2 = detrender;
-                    if (I1ForOddPrev3 != 0.0)
-                    {
+                    if (I1ForOddPrev3 != 0.0) {
                         tempReal2 = Math.Atan(Q1 / I1ForOddPrev3) * rad2Deg;
                     }
-                    else
-                    {
+                    else {
                         tempReal2 = 0.0;
                     }
                 }
                 tempReal = prevPhase - tempReal2;
                 prevPhase = tempReal2;
-                if (tempReal < 1.0)
-                {
+                if (tempReal < 1.0) {
                     tempReal = 1.0;
                 }
-                if (tempReal > 1.0)
-                {
+                if (tempReal > 1.0) {
                     tempReal = optInFastLimit / tempReal;
-                    if (tempReal < optInSlowLimit)
-                    {
+                    if (tempReal < optInSlowLimit) {
                         tempReal = optInSlowLimit;
                     }
                 }
-                else
-                {
+                else {
                     tempReal = optInFastLimit;
                 }
                 mama = (tempReal * todayValue) + ((1.0 - tempReal) * mama);
                 tempReal *= 0.5;
                 fama = (tempReal * mama) + ((1.0 - tempReal) * fama);
-                if (today >= startIdx)
-                {
+                if (today >= startIdx) {
                     outMAMA[outIdx] = mama;
                     outFAMA[outIdx] = fama;
                     outIdx++;
@@ -647,26 +590,21 @@ namespace TALibrary
                 prevQ2 = Q2;
                 prevI2 = I2;
                 tempReal = period;
-                if ((Im != 0.0) && (Re != 0.0))
-                {
+                if ((Im != 0.0) && (Re != 0.0)) {
                     period = 360.0 / (Math.Atan(Im / Re) * rad2Deg);
                 }
                 tempReal2 = 1.5 * tempReal;
-                if (period > tempReal2)
-                {
+                if (period > tempReal2) {
                     period = tempReal2;
                 }
                 tempReal2 = 0.67 * tempReal;
-                if (period < tempReal2)
-                {
+                if (period < tempReal2) {
                     period = tempReal2;
                 }
-                if (period < 6.0)
-                {
+                if (period < 6.0) {
                     period = 6.0;
                 }
-                else if (period > 50.0)
-                {
+                else if (period > 50.0) {
                     period = 50.0;
                 }
                 period = (0.2 * period) + (0.8 * tempReal);
@@ -677,23 +615,19 @@ namespace TALibrary
         }
         public static int MamaLookback(double optInFastLimit, double optInSlowLimit)
         {
-            if (optInFastLimit == -4E+37)
-            {
+            if (optInFastLimit == -4E+37) {
                 optInFastLimit = 0.5;
             }
-            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99))
-            {
+            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99)) {
                 return -1;
             }
-            if (optInSlowLimit == -4E+37)
-            {
+            if (optInSlowLimit == -4E+37) {
                 optInSlowLimit = 0.05;
             }
-            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99))
-            {
+            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99)) {
                 return -1;
             }
             return (((int)Globals.unstablePeriod[13]) + 0x20);
         }
-     }
+    }
 }

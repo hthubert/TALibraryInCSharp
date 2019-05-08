@@ -1,8 +1,8 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Trima(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             int i;
@@ -14,44 +14,35 @@ namespace TALibrary
             int trailingIdx;
             int todayIdx;
             double factor;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int outIdx = 0;
-            if ((optInTimePeriod % 2) != 1)
-            {
+            if ((optInTimePeriod % 2) != 1) {
                 i = optInTimePeriod >> 1;
                 factor = i * (i + 1);
                 factor = 1.0 / factor;
@@ -61,8 +52,7 @@ namespace TALibrary
                 numerator = 0.0;
                 numeratorSub = 0.0;
                 i = middleIdx;
-                while (i >= trailingIdx)
-                {
+                while (i >= trailingIdx) {
                     tempReal = inReal[i];
                     numeratorSub += tempReal;
                     numerator += numeratorSub;
@@ -70,8 +60,7 @@ namespace TALibrary
                 }
                 numeratorAdd = 0.0;
                 middleIdx++;
-                for (i = middleIdx; i <= todayIdx; i++)
-                {
+                for (i = middleIdx; i <= todayIdx; i++) {
                     tempReal = inReal[i];
                     numeratorAdd += tempReal;
                     numerator += numeratorAdd;
@@ -82,8 +71,7 @@ namespace TALibrary
                 outReal[outIdx] = numerator * factor;
                 outIdx++;
                 todayIdx++;
-                while (todayIdx <= endIdx)
-                {
+                while (todayIdx <= endIdx) {
                     numerator -= numeratorSub;
                     numeratorSub -= tempReal;
                     tempReal = inReal[middleIdx];
@@ -101,8 +89,7 @@ namespace TALibrary
                     outIdx++;
                 }
             }
-            else
-            {
+            else {
                 i = optInTimePeriod >> 1;
                 factor = (i + 1) * (i + 1);
                 factor = 1.0 / factor;
@@ -111,16 +98,14 @@ namespace TALibrary
                 todayIdx = middleIdx + i;
                 numerator = 0.0;
                 numeratorSub = 0.0;
-                for (i = middleIdx; i >= trailingIdx; i--)
-                {
+                for (i = middleIdx; i >= trailingIdx; i--) {
                     tempReal = inReal[i];
                     numeratorSub += tempReal;
                     numerator += numeratorSub;
                 }
                 numeratorAdd = 0.0;
                 middleIdx++;
-                for (i = middleIdx; i <= todayIdx; i++)
-                {
+                for (i = middleIdx; i <= todayIdx; i++) {
                     tempReal = inReal[i];
                     numeratorAdd += tempReal;
                     numerator += numeratorAdd;
@@ -131,8 +116,7 @@ namespace TALibrary
                 outReal[outIdx] = numerator * factor;
                 outIdx++;
                 todayIdx++;
-                while (todayIdx <= endIdx)
-                {
+                while (todayIdx <= endIdx) {
                     numerator -= numeratorSub;
                     numeratorSub -= tempReal;
                     tempReal = inReal[middleIdx];
@@ -165,44 +149,35 @@ namespace TALibrary
             int trailingIdx;
             int todayIdx;
             double factor;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int outIdx = 0;
-            if ((optInTimePeriod % 2) != 1)
-            {
+            if ((optInTimePeriod % 2) != 1) {
                 i = optInTimePeriod >> 1;
                 factor = i * (i + 1);
                 factor = 1.0 / factor;
@@ -212,8 +187,7 @@ namespace TALibrary
                 numerator = 0.0f;
                 numeratorSub = 0.0f;
                 i = middleIdx;
-                while (i >= trailingIdx)
-                {
+                while (i >= trailingIdx) {
                     tempReal = inReal[i];
                     numeratorSub += tempReal;
                     numerator += numeratorSub;
@@ -221,8 +195,7 @@ namespace TALibrary
                 }
                 numeratorAdd = 0.0f;
                 middleIdx++;
-                for (i = middleIdx; i <= todayIdx; i++)
-                {
+                for (i = middleIdx; i <= todayIdx; i++) {
                     tempReal = inReal[i];
                     numeratorAdd += tempReal;
                     numerator += numeratorAdd;
@@ -233,8 +206,7 @@ namespace TALibrary
                 outReal[outIdx] = numerator * factor;
                 outIdx++;
                 todayIdx++;
-                while (todayIdx <= endIdx)
-                {
+                while (todayIdx <= endIdx) {
                     numerator -= numeratorSub;
                     numeratorSub -= tempReal;
                     tempReal = inReal[middleIdx];
@@ -252,8 +224,7 @@ namespace TALibrary
                     outIdx++;
                 }
             }
-            else
-            {
+            else {
                 i = optInTimePeriod >> 1;
                 factor = (i + 1) * (i + 1);
                 factor = 1.0 / factor;
@@ -262,16 +233,14 @@ namespace TALibrary
                 todayIdx = middleIdx + i;
                 numerator = 0.0f;
                 numeratorSub = 0.0f;
-                for (i = middleIdx; i >= trailingIdx; i--)
-                {
+                for (i = middleIdx; i >= trailingIdx; i--) {
                     tempReal = inReal[i];
                     numeratorSub += tempReal;
                     numerator += numeratorSub;
                 }
                 numeratorAdd = 0.0f;
                 middleIdx++;
-                for (i = middleIdx; i <= todayIdx; i++)
-                {
+                for (i = middleIdx; i <= todayIdx; i++) {
                     tempReal = inReal[i];
                     numeratorAdd += tempReal;
                     numerator += numeratorAdd;
@@ -282,8 +251,7 @@ namespace TALibrary
                 outReal[outIdx] = numerator * factor;
                 outIdx++;
                 todayIdx++;
-                while (todayIdx <= endIdx)
-                {
+                while (todayIdx <= endIdx) {
                     numerator -= numeratorSub;
                     numeratorSub -= tempReal;
                     tempReal = inReal[middleIdx];
@@ -307,15 +275,13 @@ namespace TALibrary
         }
         public static int TrimaLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return (optInTimePeriod - 1);
         }
-     }
+    }
 }

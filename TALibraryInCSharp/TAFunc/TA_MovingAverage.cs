@@ -1,38 +1,30 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode MovingAverage(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod != 1)
-            {
-                switch (optInMAType)
-                {
+            if (optInTimePeriod != 1) {
+                switch (optInMAType) {
                     case MAType.Sma:
                         return Sma(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
 
@@ -54,11 +46,9 @@ namespace TALibrary
                     case MAType.Kama:
                         return Kama(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
 
-                    case MAType.Mama:
-                        {
+                    case MAType.Mama: {
                             double[] dummyBuffer = new double[(endIdx - startIdx) + 1];
-                            if (dummyBuffer != null)
-                            {
+                            if (dummyBuffer != null) {
                                 return Mama(startIdx, endIdx, inReal, 0.5, 0.05, ref outBegIdx, ref outNBElement, outReal, dummyBuffer);
                             }
                             return RetCode.AllocErr;
@@ -72,8 +62,7 @@ namespace TALibrary
             outNBElement = nbElement;
             int todayIdx = startIdx;
             int outIdx = 0;
-            while (outIdx < nbElement)
-            {
+            while (outIdx < nbElement) {
                 outReal[outIdx] = inReal[todayIdx];
                 outIdx++;
                 todayIdx++;
@@ -83,34 +72,26 @@ namespace TALibrary
         }
         public static RetCode MovingAverage(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod != 1)
-            {
-                switch (optInMAType)
-                {
+            if (optInTimePeriod != 1) {
+                switch (optInMAType) {
                     case MAType.Sma:
                         return Sma(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
 
@@ -132,11 +113,9 @@ namespace TALibrary
                     case MAType.Kama:
                         return Kama(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
 
-                    case MAType.Mama:
-                        {
+                    case MAType.Mama: {
                             double[] dummyBuffer = new double[(endIdx - startIdx) + 1];
-                            if (dummyBuffer != null)
-                            {
+                            if (dummyBuffer != null) {
                                 return Mama(startIdx, endIdx, inReal, 0.5, 0.05, ref outBegIdx, ref outNBElement, outReal, dummyBuffer);
                             }
                             return RetCode.AllocErr;
@@ -150,8 +129,7 @@ namespace TALibrary
             outNBElement = nbElement;
             int todayIdx = startIdx;
             int outIdx = 0;
-            while (outIdx < nbElement)
-            {
+            while (outIdx < nbElement) {
                 outReal[outIdx] = inReal[todayIdx];
                 outIdx++;
                 todayIdx++;
@@ -161,18 +139,14 @@ namespace TALibrary
         }
         public static int MovingAverageLookback(int optInTimePeriod, MAType optInMAType)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
-            if (optInTimePeriod > 1)
-            {
-                switch (optInMAType)
-                {
+            if (optInTimePeriod > 1) {
+                switch (optInMAType) {
                     case MAType.Sma:
                         return SmaLookback(optInTimePeriod);
 
@@ -203,5 +177,5 @@ namespace TALibrary
             }
             return 0;
         }
-     }
+    }
 }

@@ -1,48 +1,39 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Wma(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double tempReal;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
-            if (optInTimePeriod == 1)
-            {
+            if (optInTimePeriod == 1) {
                 outBegIdx = startIdx;
                 outNBElement = (endIdx - startIdx) + 1;
                 Array.Copy(inReal, startIdx, outReal, 0, outNBElement);
@@ -55,10 +46,8 @@ namespace TALibrary
             double periodSum = periodSub;
             int inIdx = trailingIdx;
             int i = 1;
-            while (true)
-            {
-                if (inIdx >= startIdx)
-                {
+            while (true) {
+                if (inIdx >= startIdx) {
                     break;
                 }
                 tempReal = inReal[inIdx];
@@ -68,10 +57,8 @@ namespace TALibrary
                 i++;
             }
             double trailingValue = 0.0;
-            while (true)
-            {
-                if (inIdx > endIdx)
-                {
+            while (true) {
+                if (inIdx > endIdx) {
                     break;
                 }
                 tempReal = inReal[inIdx];
@@ -92,43 +79,34 @@ namespace TALibrary
         public static RetCode Wma(int startIdx, int endIdx, float[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             double tempReal;
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null)
-            {
+            if (inReal == null) {
                 return RetCode.BadParam;
             }
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return RetCode.BadParam;
             }
-            if (outReal == null)
-            {
+            if (outReal == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = optInTimePeriod - 1;
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
-            if (optInTimePeriod == 1)
-            {
+            if (optInTimePeriod == 1) {
                 outBegIdx = startIdx;
                 outNBElement = (endIdx - startIdx) + 1;
                 Array.Copy(inReal, startIdx, outReal, 0, outNBElement);
@@ -141,10 +119,8 @@ namespace TALibrary
             double periodSum = periodSub;
             int inIdx = trailingIdx;
             int i = 1;
-            while (true)
-            {
-                if (inIdx >= startIdx)
-                {
+            while (true) {
+                if (inIdx >= startIdx) {
                     break;
                 }
                 tempReal = inReal[inIdx];
@@ -154,10 +130,8 @@ namespace TALibrary
                 i++;
             }
             double trailingValue = 0.0;
-            while (true)
-            {
-                if (inIdx > endIdx)
-                {
+            while (true) {
+                if (inIdx > endIdx) {
                     break;
                 }
                 tempReal = inReal[inIdx];
@@ -177,15 +151,13 @@ namespace TALibrary
         }
         public static int WmaLookback(int optInTimePeriod)
         {
-            if (optInTimePeriod == -2147483648)
-            {
+            if (optInTimePeriod == -2147483648) {
                 optInTimePeriod = 30;
             }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0))
-            {
+            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
                 return -1;
             }
             return (optInTimePeriod - 1);
         }
-     }
+    }
 }

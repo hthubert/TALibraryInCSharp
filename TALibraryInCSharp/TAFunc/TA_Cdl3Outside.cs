@@ -1,57 +1,46 @@
 using System;
 namespace TALibrary
-     {
-     public partial class Core
-     { 
+{
+    public partial class Core
+    {
         public static RetCode Cdl3Outside(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = Cdl3OutsideLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int i = startIdx;
             int outIdx = 0;
-            do
-            {
-                if ((((inClose[i - 1] >= inOpen[i - 1]) && (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) == -1)) && (((inClose[i - 1] > inOpen[i - 2]) && (inOpen[i - 1] < inClose[i - 2])) && (inClose[i] > inClose[i - 1]))) || ((((((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -1) && (inClose[i - 2] >= inOpen[i - 2])) && ((inOpen[i - 1] > inClose[i - 2]) && (inClose[i - 1] < inOpen[i - 2]))) && (inClose[i] < inClose[i - 1])))
-                {
+            do {
+                if ((((inClose[i - 1] >= inOpen[i - 1]) && (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) == -1)) && (((inClose[i - 1] > inOpen[i - 2]) && (inOpen[i - 1] < inClose[i - 2])) && (inClose[i] > inClose[i - 1]))) || ((((((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -1) && (inClose[i - 2] >= inOpen[i - 2])) && ((inOpen[i - 1] > inClose[i - 2]) && (inClose[i - 1] < inOpen[i - 2]))) && (inClose[i] < inClose[i - 1]))) {
                     int num;
-                    if (inClose[i - 1] >= inOpen[i - 1])
-                    {
+                    if (inClose[i - 1] >= inOpen[i - 1]) {
                         num = 1;
                     }
-                    else
-                    {
+                    else {
                         num = -1;
                     }
                     outInteger[outIdx] = num * 100;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outInteger[outIdx] = 0;
                     outIdx++;
                 }
@@ -64,53 +53,42 @@ namespace TALibrary
         }
         public static RetCode Cdl3Outside(int startIdx, int endIdx, float[] inOpen, float[] inHigh, float[] inLow, float[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
         {
-            if (startIdx < 0)
-            {
+            if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
             }
-            if ((endIdx < 0) || (endIdx < startIdx))
-            {
+            if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null)))
-            {
+            if (((inOpen == null) || (inHigh == null)) || ((inLow == null) || (inClose == null))) {
                 return RetCode.BadParam;
             }
-            if (outInteger == null)
-            {
+            if (outInteger == null) {
                 return RetCode.BadParam;
             }
             int lookbackTotal = Cdl3OutsideLookback();
-            if (startIdx < lookbackTotal)
-            {
+            if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
-            if (startIdx > endIdx)
-            {
+            if (startIdx > endIdx) {
                 outBegIdx = 0;
                 outNBElement = 0;
                 return RetCode.Success;
             }
             int i = startIdx;
             int outIdx = 0;
-            do
-            {
-                if ((((inClose[i - 1] >= inOpen[i - 1]) && (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) == -1)) && (((inClose[i - 1] > inOpen[i - 2]) && (inOpen[i - 1] < inClose[i - 2])) && (inClose[i] > inClose[i - 1]))) || ((((((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -1) && (inClose[i - 2] >= inOpen[i - 2])) && ((inOpen[i - 1] > inClose[i - 2]) && (inClose[i - 1] < inOpen[i - 2]))) && (inClose[i] < inClose[i - 1])))
-                {
+            do {
+                if ((((inClose[i - 1] >= inOpen[i - 1]) && (((inClose[i - 2] < inOpen[i - 2]) ? -1 : 1) == -1)) && (((inClose[i - 1] > inOpen[i - 2]) && (inOpen[i - 1] < inClose[i - 2])) && (inClose[i] > inClose[i - 1]))) || ((((((inClose[i - 1] < inOpen[i - 1]) ? -1 : 1) == -1) && (inClose[i - 2] >= inOpen[i - 2])) && ((inOpen[i - 1] > inClose[i - 2]) && (inClose[i - 1] < inOpen[i - 2]))) && (inClose[i] < inClose[i - 1]))) {
                     int num;
-                    if (inClose[i - 1] >= inOpen[i - 1])
-                    {
+                    if (inClose[i - 1] >= inOpen[i - 1]) {
                         num = 1;
                     }
-                    else
-                    {
+                    else {
                         num = -1;
                     }
                     outInteger[outIdx] = num * 100;
                     outIdx++;
                 }
-                else
-                {
+                else {
                     outInteger[outIdx] = 0;
                     outIdx++;
                 }
@@ -125,5 +103,5 @@ namespace TALibrary
         {
             return 3;
         }
-     }
+    }
 }
