@@ -80,6 +80,33 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
+        private sealed class CandleSetting
+        {
+            public int avgPeriod;
+            public double factor;
+            public Core.RangeType rangeType;
+            public Core.CandleSettingType settingType;
+        }
+        public enum CandleSettingType
+        {
+            BodyLong,
+            BodyVeryLong,
+            BodyShort,
+            BodyDoji,
+            ShadowLong,
+            ShadowVeryLong,
+            ShadowShort,
+            ShadowVeryShort,
+            Near,
+            Far,
+            Equal,
+            AllCandleSettings
+        }
+        public enum Compatibility
+        {
+            Default,
+            Metastock
+        }
         public static RetCode SetCandleSettings(CandleSettingType settingType, RangeType rangeType, int avgPeriod, double factor)
         {
             if (settingType >= CandleSettingType.AllCandleSettings) {
@@ -110,6 +137,34 @@ namespace TALibrary
                 }
             }
             return RetCode.Success;
+        }
+        public enum FuncUnstId
+        {
+            Adx = 0,
+            Adxr = 1,
+            Atr = 2,
+            Cmo = 3,
+            Dx = 4,
+            Ema = 5,
+            FuncUnstAll = 0x17,
+            FuncUnstNone = -1,
+            HtDcPeriod = 6,
+            HtDcPhase = 7,
+            HtPhasor = 8,
+            HtSine = 9,
+            HtTrendline = 10,
+            HtTrendMode = 11,
+            Kama = 12,
+            Mama = 13,
+            Mfi = 14,
+            MinusDI = 15,
+            MinusDM = 0x10,
+            Natr = 0x11,
+            PlusDI = 0x12,
+            PlusDM = 0x13,
+            Rsi = 20,
+            StochRsi = 0x15,
+            T3 = 0x16
         }
         private static RetCode TA_INT_EMA(int startIdx, int endIdx, double[] inReal_0, int optInTimePeriod_0, double optInK_1, ref int outBegIdx, ref int outNbElement, double[] outReal_0)
         {
@@ -722,61 +777,6 @@ namespace TALibrary
             outNbElement = outIdx;
             outBegIdx = startIdx;
             return RetCode.Success;
-        }
-        private sealed class CandleSetting
-        {
-            public int avgPeriod;
-            public double factor;
-            public Core.RangeType rangeType;
-            public Core.CandleSettingType settingType;
-        }
-        public enum CandleSettingType
-        {
-            BodyLong,
-            BodyVeryLong,
-            BodyShort,
-            BodyDoji,
-            ShadowLong,
-            ShadowVeryLong,
-            ShadowShort,
-            ShadowVeryShort,
-            Near,
-            Far,
-            Equal,
-            AllCandleSettings
-        }
-        public enum Compatibility
-        {
-            Default,
-            Metastock
-        }
-        public enum FuncUnstId
-        {
-            Adx = 0,
-            Adxr = 1,
-            Atr = 2,
-            Cmo = 3,
-            Dx = 4,
-            Ema = 5,
-            FuncUnstAll = 0x17,
-            FuncUnstNone = -1,
-            HtDcPeriod = 6,
-            HtDcPhase = 7,
-            HtPhasor = 8,
-            HtSine = 9,
-            HtTrendline = 10,
-            HtTrendMode = 11,
-            Kama = 12,
-            Mama = 13,
-            Mfi = 14,
-            MinusDI = 15,
-            MinusDM = 0x10,
-            Natr = 0x11,
-            PlusDI = 0x12,
-            PlusDM = 0x13,
-            Rsi = 20,
-            StochRsi = 0x15,
-            T3 = 0x16
         }
         private sealed class GlobalsType
         {
