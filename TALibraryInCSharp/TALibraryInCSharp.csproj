@@ -38,6 +38,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TA4OpenQuant.cs" />
     <Compile Include="TACore.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">

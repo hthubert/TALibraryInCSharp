@@ -1,136 +1,87 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
 
 namespace TAParser
 {
-    internal class TaLibCodeParser : CSharpSyntaxWalker
+    internal class Ta4OpenQuantRewriter : CSharpSyntaxRewriter
     {
-        private readonly Stack<BaseTypeDeclarationSyntax> _classes = new Stack<BaseTypeDeclarationSyntax>();
-        private readonly List<BaseTypeDeclarationSyntax> _innerClasses = new List<BaseTypeDeclarationSyntax>();
-        private readonly List<FieldDeclarationSyntax> _fieldMembers = new List<FieldDeclarationSyntax>();
-        private readonly List<MethodDeclarationSyntax> _methodMembers = new List<MethodDeclarationSyntax>();
+        private static readonly string[] BarDataItems = { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
 
-        private const string CoreClassName = "Core";
-
-        public TaLibCodeParser() : base(SyntaxWalkerDepth.Token)
+        private static bool IsDoubleArray(ParameterSyntax p)
         {
+            return p.Type.IsKind(SyntaxKind.ArrayType)
+                   && ((ArrayTypeSyntax)p.Type).ElementType.IsKind(SyntaxKind.PredefinedType)
+                   && ((PredefinedTypeSyntax)((ArrayTypeSyntax)p.Type).ElementType).Keyword.IsKind(SyntaxKind.DoubleKeyword);
         }
 
-        public override void VisitToken(SyntaxToken token)
+        private static bool IsBarData(ParameterSyntax p)
         {
-            if (token.Kind() == SyntaxKind.CloseBraceToken) {
-                if (_classes.Count > 0 && token.Span.End == _classes.Peek().Span.End) {
-                    _classes.Pop();
-                }
-            }
-
-            base.VisitToken(token);
+            var name = p.Identifier.Text;
+            return Array.IndexOf(BarDataItems, name) >= 0;
         }
 
-        public override void Visit(SyntaxNode node)
+        private static bool IsInParameter(ParameterSyntax p)
         {
-            switch (node.Kind()) {
-                case SyntaxKind.ClassDeclaration:
-                    var c = (ClassDeclarationSyntax)node;
-                    _classes.Push(c);
-                    if (c.Identifier.Text != CoreClassName) {
-                        _innerClasses.Add(c);
-                    }
-                    break;
-                case SyntaxKind.FieldDeclaration:
-                    if (_classes.Peek().Identifier.Text == CoreClassName) {
-                        _fieldMembers.Add((FieldDeclarationSyntax)node);
-                    }
-                    break;
-                case SyntaxKind.MethodDeclaration:
-                    if (_classes.Peek().Identifier.Text == CoreClassName) {
-                        var method = (MethodDeclarationSyntax)node;
-                        if (method.ParameterList.Parameters.Any(IsFloatArray)) {
-                            break;
+            var name = p.Identifier.Text;
+            return name.StartsWith("in") || name == "startIdx" || name == "endIdx";
+        }
+
+        public override SyntaxNode VisitParameterList(ParameterListSyntax node)
+        {
+            if (node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
+                var paramList = new StringBuilder();
+                var hasBarData = false;
+                foreach (var parameter in node.Parameters) {
+                    if (IsDoubleArray(parameter) && IsInParameter(parameter)) {
+                        if (IsBarData(parameter)) {
+                            hasBarData = true;
                         }
-                        _methodMembers.Add((MethodDeclarationSyntax)node);
+                        else {
+                            paramList.Append($"SmartQuant.ISeries {parameter.Identifier.Text}");
+                            continue;
+                        }
                     }
-                    break;
-                case SyntaxKind.EnumDeclaration:
-                    _classes.Push((BaseTypeDeclarationSyntax)node);
-                    _innerClasses.Add((BaseTypeDeclarationSyntax)node);
-                    break;
-            }
-            base.Visit(node);
+                    //paramList.Parameters.Add(parameter);
+                }
 
-            bool IsFloatArray(ParameterSyntax p)
-            {
-                return p.Type.IsKind(SyntaxKind.ArrayType)
-                       && ((ArrayTypeSyntax)p.Type).ElementType.IsKind(SyntaxKind.PredefinedType)
-                       && ((PredefinedTypeSyntax)((ArrayTypeSyntax)p.Type).ElementType).Keyword.IsKind(SyntaxKind.FloatKeyword);
+                if (hasBarData) {
+
+                }
+
+                //return paramList;
             }
+            return base.VisitParameterList(node);
         }
 
-        public void Scan(string code)
+        public override SyntaxNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
-            var tree = CSharpSyntaxTree.ParseText(code);
-            if (tree.HasCompilationUnitRoot) {
-                tree.GetCompilationUnitRoot().Accept(this);
-            }
+            return base.VisitElementAccessExpression(node);
         }
 
-        public void Clear()
+        public void Test(SmartQuant.ISeries input)
         {
-
+            SmartQuant.ISeries input1 = null;
         }
 
-        public void Save(string path)
-        {
-            using (var writer = new StreamWriter(path)) {
-                writer.WriteLine("using System;");
-                writer.WriteLine("namespace TALibrary");
-                writer.WriteLine("{");
-                writer.WriteLine("public class TA4OpenQuant");
-                writer.WriteLine("{");
-                writer.WriteLine("#region Private Members");
-                foreach (var c in _innerClasses) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                foreach (var c in _fieldMembers) {
-                    c.WriteTo(writer);
-                }
-                foreach (var c in _methodMembers) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine(" static TA4OpenQuant() { RestoreCandleDefaultSettings(CandleSettingType.AllCandleSettings); }");
-                writer.WriteLine("#endregion");
-                foreach (var c in _methodMembers) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine("#region Public Nested Classes");
-                foreach (var c in _innerClasses) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine("#endregion");
-                writer.WriteLine("}");
-                writer.WriteLine("}");
-            }
-        }
     }
 
     class Program
     {
         private const string CoreFilePath = @"..\..\..\TALibraryInCSharp\TACore.cs";
-        private const string NewCoreFilePath = @"..\..\..\TALibraryInCSharp\TA4OpenQuant.cs";
+        private const string Ta4OqFilePath = @"..\..\..\TALibraryInCSharp\TA4OpenQuant.cs";
         private const string FuncPath = @"..\..\..\TALibraryInCSharp\TAFunc";
+
         static void Main(string[] args)
+        {
+            CreateTA4OpenQuant();
+        }
+
+        private static void CreateTA4OpenQuant()
         {
             var coreCode = File.ReadAllText(CoreFilePath);
             var parser = new TaLibCodeParser();
@@ -138,7 +89,15 @@ namespace TAParser
             foreach (var file in Directory.GetFiles(FuncPath, "*.cs", SearchOption.TopDirectoryOnly)) {
                 parser.Scan(File.ReadAllText(file));
             }
-            parser.Save(NewCoreFilePath);
+
+            var rewriter = new Ta4OpenQuantRewriter();
+            var list = new List<MethodDeclarationSyntax>();
+            foreach (var member in parser.MethodMembers) {
+                list.Add((MethodDeclarationSyntax)rewriter.Visit(member));
+            }
+            parser.MethodMembers.Clear();
+            parser.MethodMembers.AddRange(list);
+            parser.Save(Ta4OqFilePath);
         }
     }
 }
