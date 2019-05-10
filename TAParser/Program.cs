@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
 
 namespace TAParser
 {
@@ -47,6 +48,10 @@ namespace TAParser
                     break;
                 case SyntaxKind.MethodDeclaration:
                     if (_classes.Peek().Identifier.Text == CoreClassName) {
+                        var method = (MethodDeclarationSyntax)node;
+                        if (method.ParameterList.Parameters.Any(IsFloatArray)) {
+                            break;
+                        }
                         _methodMembers.Add((MethodDeclarationSyntax)node);
                     }
                     break;
@@ -56,6 +61,13 @@ namespace TAParser
                     break;
             }
             base.Visit(node);
+
+            bool IsFloatArray(ParameterSyntax p)
+            {
+                return p.Type.IsKind(SyntaxKind.ArrayType)
+                       && ((ArrayTypeSyntax)p.Type).ElementType.IsKind(SyntaxKind.PredefinedType)
+                       && ((PredefinedTypeSyntax)((ArrayTypeSyntax)p.Type).ElementType).Keyword.IsKind(SyntaxKind.FloatKeyword);
+            }
         }
 
         public void Scan(string code)
@@ -65,17 +77,68 @@ namespace TAParser
                 tree.GetCompilationUnitRoot().Accept(this);
             }
         }
+
+        public void Clear()
+        {
+
+        }
+
+        public void Save(string path)
+        {
+            using (var writer = new StreamWriter(path)) {
+                writer.WriteLine("using System;");
+                writer.WriteLine("namespace TALibrary");
+                writer.WriteLine("{");
+                writer.WriteLine("public class TA4OpenQuant");
+                writer.WriteLine("{");
+                writer.WriteLine("#region Private Members");
+                foreach (var c in _innerClasses) {
+                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
+                        c.WriteTo(writer);
+                    }
+                }
+                foreach (var c in _fieldMembers) {
+                    c.WriteTo(writer);
+                }
+                foreach (var c in _methodMembers) {
+                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
+                        c.WriteTo(writer);
+                    }
+                }
+                writer.WriteLine(" static TA4OpenQuant() { RestoreCandleDefaultSettings(CandleSettingType.AllCandleSettings); }");
+                writer.WriteLine("#endregion");
+                foreach (var c in _methodMembers) {
+                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
+                        c.WriteTo(writer);
+                    }
+                }
+                writer.WriteLine("#region Public Nested Classes");
+                foreach (var c in _innerClasses) {
+                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
+                        c.WriteTo(writer);
+                    }
+                }
+                writer.WriteLine("#endregion");
+                writer.WriteLine("}");
+                writer.WriteLine("}");
+            }
+        }
     }
 
     class Program
     {
         private const string CoreFilePath = @"..\..\..\TALibraryInCSharp\TACore.cs";
-        private const string FuncPath = @"..\..\..\TALibraryInCSharp\";
+        private const string NewCoreFilePath = @"..\..\..\TALibraryInCSharp\TA4OpenQuant.cs";
+        private const string FuncPath = @"..\..\..\TALibraryInCSharp\TAFunc";
         static void Main(string[] args)
         {
             var coreCode = File.ReadAllText(CoreFilePath);
             var parser = new TaLibCodeParser();
             parser.Scan(coreCode);
+            foreach (var file in Directory.GetFiles(FuncPath, "*.cs", SearchOption.TopDirectoryOnly)) {
+                parser.Scan(File.ReadAllText(file));
+            }
+            parser.Save(NewCoreFilePath);
         }
     }
 }

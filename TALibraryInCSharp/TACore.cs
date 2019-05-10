@@ -84,8 +84,8 @@ namespace TALibrary
         {
             public int avgPeriod;
             public double factor;
-            public Core.RangeType rangeType;
-            public Core.CandleSettingType settingType;
+            public RangeType rangeType;
+            public CandleSettingType settingType;
         }
         public enum CandleSettingType
         {
@@ -170,7 +170,7 @@ namespace TALibrary
         {
             int today;
             double prevMA;
-            int lookbackTotal = TALibrary.Core.EmaLookback(optInTimePeriod_0);
+            int lookbackTotal = EmaLookback(optInTimePeriod_0);
             if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
@@ -220,7 +220,7 @@ namespace TALibrary
         {
             int today;
             double prevMA;
-            int lookbackTotal = TALibrary.Core.EmaLookback(optInTimePeriod_0);
+            int lookbackTotal = EmaLookback(optInTimePeriod_0);
             if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
@@ -295,9 +295,9 @@ namespace TALibrary
                 optInFastPeriod_0 = 12;
                 k2 = 0.15;
             }
-            int lookbackSignal = TALibrary.Core.EmaLookback(optInSignalPeriod_2);
+            int lookbackSignal = EmaLookback(optInSignalPeriod_2);
             int lookbackTotal = lookbackSignal;
-            lookbackTotal += TALibrary.Core.EmaLookback(optInSlowPeriod_1);
+            lookbackTotal += EmaLookback(optInSlowPeriod_1);
             if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
@@ -383,9 +383,9 @@ namespace TALibrary
                 optInFastPeriod_0 = 12;
                 k2 = 0.15;
             }
-            int lookbackSignal = TALibrary.Core.EmaLookback(optInSignalPeriod_2);
+            int lookbackSignal = EmaLookback(optInSignalPeriod_2);
             int lookbackTotal = lookbackSignal;
-            lookbackTotal += TALibrary.Core.EmaLookback(optInSlowPeriod_1);
+            lookbackTotal += EmaLookback(optInSlowPeriod_1);
             if (startIdx < lookbackTotal) {
                 startIdx = lookbackTotal;
             }
@@ -780,18 +780,18 @@ namespace TALibrary
         }
         private sealed class GlobalsType
         {
-            public Core.CandleSetting[] candleSettings;
-            public Core.Compatibility compatibility = Core.Compatibility.Default;
+            public CandleSetting[] candleSettings;
+            public Compatibility compatibility = Compatibility.Default;
             public long[] unstablePeriod = new long[0x17];
 
             public GlobalsType()
             {
                 for (int i = 0; i < 0x17; i++) {
-                    this.unstablePeriod[i] = 0;
+                    unstablePeriod[i] = 0;
                 }
-                this.candleSettings = new Core.CandleSetting[11];
-                for (int j = 0; j < this.candleSettings.Length; j++) {
-                    this.candleSettings[j] = new Core.CandleSetting();
+                candleSettings = new CandleSetting[11];
+                for (int j = 0; j < candleSettings.Length; j++) {
+                    candleSettings[j] = new CandleSetting();
                 }
             }
         }
@@ -835,7 +835,8 @@ namespace TALibrary
             Success = 0,
             UnknownErr = 0xffff
         }
-        internal class MoneyFlow
+
+        private class MoneyFlow
         {
             public double negative;
             public double positive;
