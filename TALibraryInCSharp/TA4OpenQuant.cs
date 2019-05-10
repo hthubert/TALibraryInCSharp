@@ -1,41 +1,9 @@
 using System;
 namespace TALibrary
 {
-    public class TA4OpenQuant
-    {
-        #region Private Members
-        private sealed class CandleSetting
-        {
-            public int avgPeriod;
-            public double factor;
-            public RangeType rangeType;
-            public CandleSettingType settingType;
-        }
-        private sealed class GlobalsType
-        {
-            public CandleSetting[] candleSettings;
-            public Compatibility compatibility = Compatibility.Default;
-            public long[] unstablePeriod = new long[0x17];
-
-            public GlobalsType()
-            {
-                for (int i = 0; i < 0x17; i++) {
-                    unstablePeriod[i] = 0;
-                }
-                candleSettings = new CandleSetting[11];
-                for (int j = 0; j < candleSettings.Length; j++) {
-                    candleSettings[j] = new CandleSetting();
-                }
-            }
-        }
-
-        private class MoneyFlow
-        {
-            public double negative;
-            public double positive;
-        }
-        private static readonly GlobalsType Globals = new GlobalsType();
-        private static RetCode TA_INT_EMA(int startIdx, int endIdx, double[] inReal_0, int optInTimePeriod_0, double optInK_1, ref int outBegIdx, ref int outNbElement, double[] outReal_0)
+public partial class Core
+{
+        private static RetCode TA_INT_EMA(int startIdx,int endIdx,SmartQuant.ISeries inReal_0,int optInTimePeriod_0,double optInK_1,ref int outBegIdx,ref int outNbElement,double[] outReal_0)
         {
             int today;
             double prevMA;
@@ -85,7 +53,7 @@ namespace TALibrary
             outNbElement = outIdx;
             return RetCode.Success;
         }
-        private static RetCode TA_INT_MACD(int startIdx, int endIdx, double[] inReal_0, int optInFastPeriod_0, int optInSlowPeriod_1, int optInSignalPeriod_2, ref int outBegIdx, ref int outNbElement, double[] outMACD_0, double[] outMACDSignal_1, double[] outMACDHist_2)
+        private static RetCode TA_INT_MACD(int startIdx,int endIdx,SmartQuant.ISeries inReal_0,int optInFastPeriod_0,int optInSlowPeriod_1,int optInSignalPeriod_2,ref int outBegIdx,ref int outNbElement,double[] outMACD_0,double[] outMACDSignal_1,double[] outMACDHist_2)
         {
             int i;
             int tempInteger = 0;
@@ -173,7 +141,7 @@ namespace TALibrary
             outNbElement = outNbElement2;
             return RetCode.Success;
         }
-        private static RetCode TA_INT_PO(int startIdx, int endIdx, double[] inReal_0, int optInFastPeriod_0, int optInSlowPeriod_1, MAType optInMethod_2, ref int outBegIdx, ref int outNbElement, double[] outReal_0, double[] tempBuffer, int doPercentageOutput)
+        private static RetCode TA_INT_PO(int startIdx,int endIdx,SmartQuant.ISeries inReal_0,int optInFastPeriod_0,int optInSlowPeriod_1,MAType optInMethod_2,ref int outBegIdx,ref int outNbElement,double[] outReal_0,double[] tempBuffer,int doPercentageOutput)
         {
             int tempInteger = 0;
             int outBegIdx2 = 0;
@@ -224,7 +192,7 @@ namespace TALibrary
             }
             return retCode;
         }
-        private static RetCode TA_INT_SMA(int startIdx, int endIdx, double[] inReal_0, int optInTimePeriod_0, ref int outBegIdx, ref int outNbElement, double[] outReal_0)
+        private static RetCode TA_INT_SMA(int startIdx,int endIdx,SmartQuant.ISeries inReal_0,int optInTimePeriod_0,ref int outBegIdx,ref int outNbElement,double[] outReal_0)
         {
             int lookbackTotal = optInTimePeriod_0 - 1;
             if (startIdx < lookbackTotal) {
@@ -259,7 +227,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        private static void TA_INT_stddev_using_precalc_ma(double[] inReal, double[] inMovAvg, int inMovAvgBegIdx, int inMovAvgNbElement, int timePeriod, double[] output)
+        private static void TA_INT_stddev_using_precalc_ma(SmartQuant.ISeries inReal,double[] inMovAvg,int inMovAvgBegIdx,int inMovAvgNbElement,int timePeriod,double[] output)
         {
             double tempReal;
             int outIdx;
@@ -294,7 +262,7 @@ namespace TALibrary
                 endSum++;
             }
         }
-        private static RetCode TA_INT_VAR(int startIdx, int endIdx, double[] inReal_0, int optInTimePeriod_0, ref int outBegIdx, ref int outNbElement, double[] outReal_0)
+        private static RetCode TA_INT_VAR(int startIdx,int endIdx,SmartQuant.ISeries inReal_0,int optInTimePeriod_0,ref int outBegIdx,ref int outNbElement,double[] outReal_0)
         {
             double tempReal;
             int nbInitialElementNeeded = optInTimePeriod_0 - 1;
@@ -341,111 +309,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        static TA4OpenQuant() { RestoreCandleDefaultSettings(CandleSettingType.AllCandleSettings); }
-        #endregion
-        public static Compatibility GetCompatibility()
-        {
-            return Globals.compatibility;
-        }
-        public static long GetUnstablePeriod(FuncUnstId id)
-        {
-            return id >= FuncUnstId.FuncUnstAll ? 0 : Globals.unstablePeriod[(int)id];
-        }
-        public static RetCode RestoreCandleDefaultSettings(CandleSettingType settingType)
-        {
-            switch (settingType) {
-                case CandleSettingType.BodyLong:
-                    SetCandleSettings(CandleSettingType.BodyLong, RangeType.RealBody, 10, 1.0);
-                    break;
-
-                case CandleSettingType.BodyVeryLong:
-                    SetCandleSettings(CandleSettingType.BodyVeryLong, RangeType.RealBody, 10, 3.0);
-                    break;
-
-                case CandleSettingType.BodyShort:
-                    SetCandleSettings(CandleSettingType.BodyShort, RangeType.RealBody, 10, 1.0);
-                    break;
-
-                case CandleSettingType.BodyDoji:
-                    SetCandleSettings(CandleSettingType.BodyDoji, RangeType.HighLow, 10, 0.1);
-                    break;
-
-                case CandleSettingType.ShadowLong:
-                    SetCandleSettings(CandleSettingType.ShadowLong, RangeType.RealBody, 0, 1.0);
-                    break;
-
-                case CandleSettingType.ShadowVeryLong:
-                    SetCandleSettings(CandleSettingType.ShadowVeryLong, RangeType.RealBody, 0, 2.0);
-                    break;
-
-                case CandleSettingType.ShadowShort:
-                    SetCandleSettings(CandleSettingType.ShadowShort, RangeType.Shadows, 10, 1.0);
-                    break;
-
-                case CandleSettingType.ShadowVeryShort:
-                    SetCandleSettings(CandleSettingType.ShadowVeryShort, RangeType.HighLow, 10, 0.1);
-                    break;
-
-                case CandleSettingType.Near:
-                    SetCandleSettings(CandleSettingType.Near, RangeType.HighLow, 5, 0.2);
-                    break;
-
-                case CandleSettingType.Far:
-                    SetCandleSettings(CandleSettingType.Far, RangeType.HighLow, 5, 0.6);
-                    break;
-
-                case CandleSettingType.Equal:
-                    SetCandleSettings(CandleSettingType.Equal, RangeType.HighLow, 5, 0.05);
-                    break;
-
-                case CandleSettingType.AllCandleSettings:
-                    SetCandleSettings(CandleSettingType.BodyLong, RangeType.RealBody, 10, 1.0);
-                    SetCandleSettings(CandleSettingType.BodyVeryLong, RangeType.RealBody, 10, 3.0);
-                    SetCandleSettings(CandleSettingType.BodyShort, RangeType.RealBody, 10, 1.0);
-                    SetCandleSettings(CandleSettingType.BodyDoji, RangeType.HighLow, 10, 0.1);
-                    SetCandleSettings(CandleSettingType.ShadowLong, RangeType.RealBody, 0, 1.0);
-                    SetCandleSettings(CandleSettingType.ShadowVeryLong, RangeType.RealBody, 0, 2.0);
-                    SetCandleSettings(CandleSettingType.ShadowShort, RangeType.Shadows, 10, 1.0);
-                    SetCandleSettings(CandleSettingType.ShadowVeryShort, RangeType.HighLow, 10, 0.1);
-                    SetCandleSettings(CandleSettingType.Near, RangeType.HighLow, 5, 0.2);
-                    SetCandleSettings(CandleSettingType.Far, RangeType.HighLow, 5, 0.6);
-                    SetCandleSettings(CandleSettingType.Equal, RangeType.HighLow, 5, 0.05);
-                    break;
-            }
-            return RetCode.Success;
-        }
-        public static RetCode SetCandleSettings(CandleSettingType settingType, RangeType rangeType, int avgPeriod, double factor)
-        {
-            if (settingType >= CandleSettingType.AllCandleSettings) {
-                return RetCode.BadParam;
-            }
-            Globals.candleSettings[(int)settingType].settingType = settingType;
-            Globals.candleSettings[(int)settingType].rangeType = rangeType;
-            Globals.candleSettings[(int)settingType].avgPeriod = avgPeriod;
-            Globals.candleSettings[(int)settingType].factor = factor;
-            return RetCode.Success;
-        }
-        public static RetCode SetCompatibility(Compatibility value)
-        {
-            Globals.compatibility = value;
-            return RetCode.Success;
-        }
-        public static RetCode SetUnstablePeriod(FuncUnstId id, long unstablePeriod)
-        {
-            if (id > FuncUnstId.FuncUnstAll) {
-                return RetCode.BadParam;
-            }
-            if (id != FuncUnstId.FuncUnstAll) {
-                Globals.unstablePeriod[(int)id] = unstablePeriod;
-            }
-            else {
-                for (int i = 0; i < 0x17; i++) {
-                    Globals.unstablePeriod[i] = unstablePeriod;
-                }
-            }
-            return RetCode.Success;
-        }
-        public static RetCode Acos(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Acos(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -470,11 +334,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int AcosLookback()
-        {
-            return 0;
-        }
-        public static RetCode Ad(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, double[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Ad(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,double[] inVolume,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -512,11 +372,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int AdLookback()
-        {
-            return 0;
-        }
-        public static RetCode Add(int startIdx, int endIdx, double[] inReal0, double[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Add(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -544,11 +400,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int AddLookback()
-        {
-            return 0;
-        }
-        public static RetCode AdOsc(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, double[] inVolume, int optInFastPeriod, int optInSlowPeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode AdOsc(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,double[] inVolume,int optInFastPeriod,int optInSlowPeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int slowestPeriod;
             if (startIdx < 0) {
@@ -643,30 +495,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int AdOscLookback(int optInFastPeriod, int optInSlowPeriod)
-        {
-            int slowestPeriod;
-            if (optInFastPeriod == -2147483648) {
-                optInFastPeriod = 3;
-            }
-            else if ((optInFastPeriod < 2) || (optInFastPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod == -2147483648) {
-                optInSlowPeriod = 10;
-            }
-            else if ((optInSlowPeriod < 2) || (optInSlowPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInFastPeriod < optInSlowPeriod) {
-                slowestPeriod = optInSlowPeriod;
-            }
-            else {
-                slowestPeriod = optInFastPeriod;
-            }
-            return EmaLookback(slowestPeriod);
-        }
-        public static RetCode Adx(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Adx(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             double tempReal2;
@@ -874,17 +703,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int AdxLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (((optInTimePeriod * 2) + ((int)Globals.unstablePeriod[0])) - 1);
-        }
-        public static RetCode Adxr(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Adxr(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -939,20 +758,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int AdxrLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return ((optInTimePeriod + AdxLookback(optInTimePeriod)) - 1);
-            }
-            return 3;
-        }
-        public static RetCode Apo(int startIdx, int endIdx, double[] inReal, int optInFastPeriod, int optInSlowPeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Apo(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInFastPeriod,int optInSlowPeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -984,23 +790,7 @@ namespace TALibrary
             }
             return TA_INT_PO(startIdx, endIdx, inReal, optInFastPeriod, optInSlowPeriod, optInMAType, ref outBegIdx, ref outNBElement, outReal, tempBuffer, 0);
         }
-        public static int ApoLookback(int optInFastPeriod, int optInSlowPeriod, MAType optInMAType)
-        {
-            if (optInFastPeriod == -2147483648) {
-                optInFastPeriod = 12;
-            }
-            else if ((optInFastPeriod < 2) || (optInFastPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod == -2147483648) {
-                optInSlowPeriod = 0x1a;
-            }
-            else if ((optInSlowPeriod < 2) || (optInSlowPeriod > 0x186a0)) {
-                return -1;
-            }
-            return MovingAverageLookback((optInSlowPeriod <= optInFastPeriod) ? optInFastPeriod : optInSlowPeriod, optInMAType);
-        }
-        public static RetCode Aroon(int startIdx, int endIdx, double[] inHigh, double[] inLow, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outAroonDown, double[] outAroonUp)
+        public static RetCode Aroon(int startIdx,int endIdx,double[] inHigh,double[] inLow,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outAroonDown,double[] outAroonUp,SmartQuant.ISeries inBar)
         {
             int i;
             if (startIdx < 0) {
@@ -1097,17 +887,7 @@ namespace TALibrary
             today++;
             goto Label_00BB;
         }
-        public static int AroonLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode AroonOsc(int startIdx, int endIdx, double[] inHigh, double[] inLow, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode AroonOsc(int startIdx,int endIdx,double[] inHigh,double[] inLow,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int i;
             double aroon;
@@ -1202,17 +982,7 @@ namespace TALibrary
             today++;
             goto Label_00AF;
         }
-        public static int AroonOscLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode Asin(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Asin(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -1237,11 +1007,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int AsinLookback()
-        {
-            return 0;
-        }
-        public static RetCode Atan(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Atan(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -1266,11 +1032,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int AtanLookback()
-        {
-            return 0;
-        }
-        public static RetCode Atr(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Atr(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int outNbElement1 = 0;
             int outBegIdx1 = 0;
@@ -1344,17 +1106,7 @@ namespace TALibrary
             }
             return retCode;
         }
-        public static int AtrLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod + ((int)Globals.unstablePeriod[2]));
-        }
-        public static RetCode AvgPrice(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode AvgPrice(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -1377,11 +1129,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int AvgPriceLookback()
-        {
-            return 0;
-        }
-        public static RetCode Bbands(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outRealUpperBand, double[] outRealMiddleBand, double[] outRealLowerBand)
+        public static RetCode Bbands(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,double optInNbDevUp,double optInNbDevDn,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outRealUpperBand,double[] outRealMiddleBand,double[] outRealLowerBand)
         {
             int i;
             double tempReal2;
@@ -1524,29 +1272,7 @@ namespace TALibrary
             Label_02B1:
             return RetCode.Success;
         }
-        public static int BbandsLookback(int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, MAType optInMAType)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 5;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInNbDevUp == -4E+37) {
-                optInNbDevUp = 2.0;
-            }
-            else if ((optInNbDevUp < -3E+37) || (optInNbDevUp > 3E+37)) {
-                return -1;
-            }
-            if (optInNbDevDn == -4E+37) {
-                optInNbDevDn = 2.0;
-            }
-            else if ((optInNbDevDn < -3E+37) || (optInNbDevDn > 3E+37)) {
-                return -1;
-            }
-            return MovingAverageLookback(optInTimePeriod, optInMAType);
-        }
-        public static RetCode Beta(int startIdx, int endIdx, double[] inReal0, double[] inReal1, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Beta(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double x;
             double y;
@@ -1683,17 +1409,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int BetaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 5;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode Bop(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Bop(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -1723,11 +1439,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int BopLookback()
-        {
-            return 0;
-        }
-        public static RetCode Cci(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Cci(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int circBuffer_Idx = 0;
             int maxIdx_circBuffer = 0x1d;
@@ -1812,17 +1524,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CciLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Cdl2Crows(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl2Crows(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -2048,11 +1750,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl2CrowsLookback()
-        {
-            return (Globals.candleSettings[0].avgPeriod + 2);
-        }
-        public static RetCode Cdl3BlackCrows(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3BlackCrows(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double[] ShadowVeryShortPeriodTotal = new double[3];
@@ -2465,11 +2163,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3BlackCrowsLookback()
-        {
-            return (Globals.candleSettings[7].avgPeriod + 3);
-        }
-        public static RetCode Cdl3Inside(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3Inside(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -2884,11 +2578,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3InsideLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 2);
-        }
-        public static RetCode Cdl3LineStrike(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3LineStrike(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             int num46;
@@ -3354,11 +3044,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3LineStrikeLookback()
-        {
-            return (Globals.candleSettings[8].avgPeriod + 3);
-        }
-        public static RetCode Cdl3Outside(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3Outside(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -3406,11 +3092,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3OutsideLookback()
-        {
-            return 3;
-        }
-        public static RetCode Cdl3StarsInSouth(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3StarsInSouth(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -4294,25 +3976,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3StarsInSouthLookback()
-        {
-            int num;
-            int avgPeriod;
-            if (Globals.candleSettings[0].avgPeriod > Globals.candleSettings[2].avgPeriod) {
-                avgPeriod = Globals.candleSettings[0].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[2].avgPeriod;
-            }
-            if (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[7].avgPeriod) > avgPeriod) {
-                num = (Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[7].avgPeriod;
-            }
-            else {
-                num = (Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[2].avgPeriod) ? Globals.candleSettings[2].avgPeriod : Globals.candleSettings[0].avgPeriod;
-            }
-            return (num + 2);
-        }
-        public static RetCode Cdl3WhiteSoldiers(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode Cdl3WhiteSoldiers(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double num5;
@@ -5411,25 +5075,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Cdl3WhiteSoldiersLookback()
-        {
-            int num;
-            int avgPeriod;
-            if (Globals.candleSettings[9].avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                avgPeriod = Globals.candleSettings[9].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[8].avgPeriod;
-            }
-            if (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[2].avgPeriod) ? Globals.candleSettings[2].avgPeriod : Globals.candleSettings[7].avgPeriod) > avgPeriod) {
-                num = (Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[2].avgPeriod) ? Globals.candleSettings[2].avgPeriod : Globals.candleSettings[7].avgPeriod;
-            }
-            else {
-                num = (Globals.candleSettings[9].avgPeriod <= Globals.candleSettings[8].avgPeriod) ? Globals.candleSettings[8].avgPeriod : Globals.candleSettings[9].avgPeriod;
-            }
-            return (num + 2);
-        }
-        public static RetCode CdlAbandonedBaby(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlAbandonedBaby(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -5986,24 +5632,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlAbandonedBabyLookback(double optInPenetration)
-        {
-            int avgPeriod;
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.3;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            if (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod) > Globals.candleSettings[2].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[2].avgPeriod;
-            }
-            return (avgPeriod + 2);
-        }
-        public static RetCode CdlAdvanceBlock(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlAdvanceBlock(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double num5;
@@ -7384,46 +7013,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlAdvanceBlockLookback()
-        {
-            int num;
-            int num4;
-            int avgPeriod;
-            if (Globals.candleSettings[9].avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                avgPeriod = Globals.candleSettings[9].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[8].avgPeriod;
-            }
-            if (((Globals.candleSettings[4].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[4].avgPeriod) > avgPeriod) {
-                num4 = (Globals.candleSettings[4].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[4].avgPeriod;
-            }
-            else {
-                num4 = (Globals.candleSettings[9].avgPeriod <= Globals.candleSettings[8].avgPeriod) ? Globals.candleSettings[8].avgPeriod : Globals.candleSettings[9].avgPeriod;
-            }
-            if (num4 > Globals.candleSettings[0].avgPeriod) {
-                int num2;
-                int num3;
-                if (Globals.candleSettings[9].avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                    num3 = Globals.candleSettings[9].avgPeriod;
-                }
-                else {
-                    num3 = Globals.candleSettings[8].avgPeriod;
-                }
-                if (((Globals.candleSettings[4].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[4].avgPeriod) > num3) {
-                    num2 = (Globals.candleSettings[4].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[4].avgPeriod;
-                }
-                else {
-                    num2 = (Globals.candleSettings[9].avgPeriod <= Globals.candleSettings[8].avgPeriod) ? Globals.candleSettings[8].avgPeriod : Globals.candleSettings[9].avgPeriod;
-                }
-                num = num2;
-            }
-            else {
-                num = Globals.candleSettings[0].avgPeriod;
-            }
-            return (num + 2);
-        }
-        public static RetCode CdlBeltHold(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlBeltHold(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -7880,11 +7470,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlBeltHoldLookback()
-        {
-            return ((Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[0].avgPeriod);
-        }
-        public static RetCode CdlBreakaway(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlBreakaway(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -8171,11 +7757,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlBreakawayLookback()
-        {
-            return (Globals.candleSettings[0].avgPeriod + 4);
-        }
-        public static RetCode CdlClosingMarubozu(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlClosingMarubozu(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -8632,11 +8214,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlClosingMarubozuLookback()
-        {
-            return ((Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[0].avgPeriod);
-        }
-        public static RetCode CdlConcealBabysWall(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlConcealBabysWall(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double[] ShadowVeryShortPeriodTotal = new double[4];
@@ -9181,11 +8759,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlConcealBabysWallLookback()
-        {
-            return (Globals.candleSettings[7].avgPeriod + 3);
-        }
-        public static RetCode CdlCounterAttack(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlCounterAttack(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num15;
             double num20;
@@ -9719,11 +9293,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlCounterAttackLookback()
-        {
-            return (((Globals.candleSettings[10].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[10].avgPeriod) + 1);
-        }
-        public static RetCode CdlDarkCloudCover(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlDarkCloudCover(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -9939,17 +9509,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlDarkCloudCoverLookback(double optInPenetration)
-        {
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.5;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            return (Globals.candleSettings[0].avgPeriod + 1);
-        }
-        public static RetCode CdlDoji(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlDoji(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -10155,11 +9715,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlDojiLookback()
-        {
-            return Globals.candleSettings[3].avgPeriod;
-        }
-        public static RetCode CdlDojiStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlDojiStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -10584,11 +10140,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlDojiStarLookback()
-        {
-            return (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod) + 1);
-        }
-        public static RetCode CdlDragonflyDoji(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlDragonflyDoji(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -11028,11 +10580,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlDragonflyDojiLookback()
-        {
-            return ((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[3].avgPeriod);
-        }
-        public static RetCode CdlEngulfing(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlEngulfing(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -11080,11 +10628,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlEngulfingLookback()
-        {
-            return 2;
-        }
-        public static RetCode CdlEveningDojiStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlEveningDojiStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -11650,24 +11194,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlEveningDojiStarLookback(double optInPenetration)
-        {
-            int avgPeriod;
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.3;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            if (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod) > Globals.candleSettings[2].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[2].avgPeriod;
-            }
-            return (avgPeriod + 2);
-        }
-        public static RetCode CdlEveningStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlEveningStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -12224,17 +11751,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlEveningStarLookback(double optInPenetration)
-        {
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.3;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 2);
-        }
-        public static RetCode CdlGapSideSideWhite(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlGapSideSideWhite(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -12804,11 +12321,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlGapSideSideWhiteLookback()
-        {
-            return (((Globals.candleSettings[8].avgPeriod <= Globals.candleSettings[10].avgPeriod) ? Globals.candleSettings[10].avgPeriod : Globals.candleSettings[8].avgPeriod) + 2);
-        }
-        public static RetCode CdlGravestoneDoji(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlGravestoneDoji(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -13248,11 +12761,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlGravestoneDojiLookback()
-        {
-            return ((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[3].avgPeriod);
-        }
-        public static RetCode CdlHammer(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHammer(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -13985,32 +13494,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHammerLookback()
-        {
-            int num;
-            int avgPeriod;
-            if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[7].avgPeriod;
-            }
-            if (avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                int num2;
-                if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                    num2 = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-                }
-                else {
-                    num2 = Globals.candleSettings[7].avgPeriod;
-                }
-                num = num2;
-            }
-            else {
-                num = Globals.candleSettings[8].avgPeriod;
-            }
-            return (num + 1);
-        }
-        public static RetCode CdlHangingMan(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHangingMan(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -14743,32 +14227,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHangingManLookback()
-        {
-            int num;
-            int avgPeriod;
-            if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[7].avgPeriod;
-            }
-            if (avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                int num2;
-                if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                    num2 = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-                }
-                else {
-                    num2 = Globals.candleSettings[7].avgPeriod;
-                }
-                num = num2;
-            }
-            else {
-                num = Globals.candleSettings[8].avgPeriod;
-            }
-            return (num + 1);
-        }
-        public static RetCode CdlHarami(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHarami(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -15183,11 +14642,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHaramiLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 1);
-        }
-        public static RetCode CdlHaramiCross(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHaramiCross(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -15602,11 +15057,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHaramiCrossLookback()
-        {
-            return (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod) + 1);
-        }
-        public static RetCode CdlHignWave(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHignWave(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -16053,11 +15504,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHignWaveLookback()
-        {
-            return ((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[5].avgPeriod) ? Globals.candleSettings[5].avgPeriod : Globals.candleSettings[2].avgPeriod);
-        }
-        public static RetCode CdlHikkake(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHikkake(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -16128,11 +15575,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHikkakeLookback()
-        {
-            return 5;
-        }
-        public static RetCode CdlHikkakeMod(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHikkakeMod(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int outIdx;
             double num5;
@@ -16622,11 +16065,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHikkakeModLookback()
-        {
-            return (((1 <= Globals.candleSettings[8].avgPeriod) ? Globals.candleSettings[8].avgPeriod : 1) + 5);
-        }
-        public static RetCode CdlHomingPigeon(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlHomingPigeon(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -17004,11 +16443,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlHomingPigeonLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 1);
-        }
-        public static RetCode CdlIdentical3Crows(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlIdentical3Crows(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double[] ShadowVeryShortPeriodTotal = new double[3];
@@ -17783,11 +17218,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlIdentical3CrowsLookback()
-        {
-            return (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[10].avgPeriod) ? Globals.candleSettings[10].avgPeriod : Globals.candleSettings[7].avgPeriod) + 2);
-        }
-        public static RetCode CdlInNeck(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlInNeck(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -18165,11 +17596,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlInNeckLookback()
-        {
-            return (((Globals.candleSettings[10].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[10].avgPeriod) + 1);
-        }
-        public static RetCode CdlInvertedHammer(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlInvertedHammer(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -18742,18 +18169,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlInvertedHammerLookback()
-        {
-            int avgPeriod;
-            if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[7].avgPeriod;
-            }
-            return (avgPeriod + 1);
-        }
-        public static RetCode CdlKicking(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlKicking(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             int num68;
@@ -19458,11 +18874,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlKickingLookback()
-        {
-            return (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[7].avgPeriod) + 1);
-        }
-        public static RetCode CdlKickingByLength(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlKickingByLength(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             int num70;
@@ -20181,11 +19593,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlKickingByLengthLookback()
-        {
-            return (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[7].avgPeriod) + 1);
-        }
-        public static RetCode CdlLadderBottom(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlLadderBottom(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -20402,11 +19810,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlLadderBottomLookback()
-        {
-            return (Globals.candleSettings[7].avgPeriod + 4);
-        }
-        public static RetCode CdlLongLeggedDoji(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlLongLeggedDoji(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -20848,11 +20252,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlLongLeggedDojiLookback()
-        {
-            return ((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[3].avgPeriod);
-        }
-        public static RetCode CdlLongLine(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlLongLine(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -21299,11 +20699,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlLongLineLookback()
-        {
-            return ((Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[0].avgPeriod);
-        }
-        public static RetCode CdlMarubozu(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlMarubozu(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -21750,11 +21146,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlMarubozuLookback()
-        {
-            return ((Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[0].avgPeriod);
-        }
-        public static RetCode CdlMatchingLow(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlMatchingLow(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -22015,11 +21407,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlMatchingLowLookback()
-        {
-            return (Globals.candleSettings[10].avgPeriod + 1);
-        }
-        public static RetCode CdlMatHold(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlMatHold(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num15;
             double num20;
@@ -22681,17 +22069,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlMatHoldLookback(double optInPenetration)
-        {
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.5;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 4);
-        }
-        public static RetCode CdlMorningDojiStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlMorningDojiStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -23257,24 +22635,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlMorningDojiStarLookback(double optInPenetration)
-        {
-            int avgPeriod;
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.3;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            if (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod) > Globals.candleSettings[2].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[3].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[2].avgPeriod;
-            }
-            return (avgPeriod + 2);
-        }
-        public static RetCode CdlMorningStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, double optInPenetration, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlMorningStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,double optInPenetration,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -23831,17 +23192,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlMorningStarLookback(double optInPenetration)
-        {
-            if (optInPenetration == -4E+37) {
-                optInPenetration = 0.3;
-            }
-            else if ((optInPenetration < 0.0) || (optInPenetration > 3E+37)) {
-                return -1;
-            }
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 2);
-        }
-        public static RetCode CdlOnNeck(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlOnNeck(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -24270,11 +23621,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlOnNeckLookback()
-        {
-            return (((Globals.candleSettings[10].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[10].avgPeriod) + 1);
-        }
-        public static RetCode CdlPiercing(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlPiercing(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double[] BodyLongPeriodTotal = new double[2];
@@ -24578,11 +23925,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlPiercingLookback()
-        {
-            return (Globals.candleSettings[0].avgPeriod + 1);
-        }
-        public static RetCode CdlRickshawMan(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlRickshawMan(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -25255,14 +24598,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlRickshawManLookback()
-        {
-            if (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[3].avgPeriod) > Globals.candleSettings[8].avgPeriod) {
-                return ((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[3].avgPeriod);
-            }
-            return Globals.candleSettings[8].avgPeriod;
-        }
-        public static RetCode CdlRiseFall3Methods(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlRiseFall3Methods(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -26137,11 +25473,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlRiseFall3MethodsLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 4);
-        }
-        public static RetCode CdlSeperatingLines(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlSeperatingLines(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -26830,18 +26162,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlSeperatingLinesLookback()
-        {
-            int avgPeriod;
-            if (((Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[7].avgPeriod) > Globals.candleSettings[10].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[7].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[10].avgPeriod;
-            }
-            return (avgPeriod + 1);
-        }
-        public static RetCode CdlShootingStar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlShootingStar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -27414,18 +26735,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlShootingStarLookback()
-        {
-            int avgPeriod;
-            if (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod) > Globals.candleSettings[7].avgPeriod) {
-                avgPeriod = (Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[4].avgPeriod) ? Globals.candleSettings[4].avgPeriod : Globals.candleSettings[2].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[7].avgPeriod;
-            }
-            return (avgPeriod + 1);
-        }
-        public static RetCode CdlShortLine(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlShortLine(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -27872,11 +27182,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlShortLineLookback()
-        {
-            return ((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[6].avgPeriod) ? Globals.candleSettings[6].avgPeriod : Globals.candleSettings[2].avgPeriod);
-        }
-        public static RetCode CdlSpinningTop(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlSpinningTop(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -28108,11 +27414,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlSpinningTopLookback()
-        {
-            return Globals.candleSettings[2].avgPeriod;
-        }
-        public static RetCode CdlStalledPattern(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlStalledPattern(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int totIdx;
             double num5;
@@ -29018,25 +28320,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlStalledPatternLookback()
-        {
-            int num;
-            int avgPeriod;
-            if (Globals.candleSettings[7].avgPeriod > Globals.candleSettings[8].avgPeriod) {
-                avgPeriod = Globals.candleSettings[7].avgPeriod;
-            }
-            else {
-                avgPeriod = Globals.candleSettings[8].avgPeriod;
-            }
-            if (((Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[2].avgPeriod) ? Globals.candleSettings[2].avgPeriod : Globals.candleSettings[0].avgPeriod) > avgPeriod) {
-                num = (Globals.candleSettings[0].avgPeriod <= Globals.candleSettings[2].avgPeriod) ? Globals.candleSettings[2].avgPeriod : Globals.candleSettings[0].avgPeriod;
-            }
-            else {
-                num = (Globals.candleSettings[7].avgPeriod <= Globals.candleSettings[8].avgPeriod) ? Globals.candleSettings[8].avgPeriod : Globals.candleSettings[7].avgPeriod;
-            }
-            return (num + 2);
-        }
-        public static RetCode CdlStickSandwhich(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlStickSandwhich(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -29297,11 +28581,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlStickSandwhichLookback()
-        {
-            return (Globals.candleSettings[10].avgPeriod + 2);
-        }
-        public static RetCode CdlTakuri(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlTakuri(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -29858,14 +29138,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlTakuriLookback()
-        {
-            if (((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[3].avgPeriod) > Globals.candleSettings[5].avgPeriod) {
-                return ((Globals.candleSettings[3].avgPeriod <= Globals.candleSettings[7].avgPeriod) ? Globals.candleSettings[7].avgPeriod : Globals.candleSettings[3].avgPeriod);
-            }
-            return Globals.candleSettings[5].avgPeriod;
-        }
-        public static RetCode CdlTasukiGap(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlTasukiGap(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -30187,11 +29460,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlTasukiGapLookback()
-        {
-            return (Globals.candleSettings[8].avgPeriod + 2);
-        }
-        public static RetCode CdlThrusting(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlThrusting(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -30569,11 +29838,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlThrustingLookback()
-        {
-            return (((Globals.candleSettings[10].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[10].avgPeriod) + 1);
-        }
-        public static RetCode CdlTristar(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlTristar(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -30949,11 +30214,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlTristarLookback()
-        {
-            return (Globals.candleSettings[3].avgPeriod + 2);
-        }
-        public static RetCode CdlUnique3River(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlUnique3River(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -31329,11 +30590,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlUnique3RiverLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 2);
-        }
-        public static RetCode CdlUpsideGap2Crows(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlUpsideGap2Crows(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             double num5;
             double num10;
@@ -31727,11 +30984,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlUpsideGap2CrowsLookback()
-        {
-            return (((Globals.candleSettings[2].avgPeriod <= Globals.candleSettings[0].avgPeriod) ? Globals.candleSettings[0].avgPeriod : Globals.candleSettings[2].avgPeriod) + 2);
-        }
-        public static RetCode CdlXSideGap3Methods(int startIdx, int endIdx, double[] inOpen, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode CdlXSideGap3Methods(int startIdx,int endIdx,double[] inOpen,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,int[] outInteger,SmartQuant.ISeries inBar)
         {
             int num;
             double num2;
@@ -31879,11 +31132,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CdlXSideGap3MethodsLookback()
-        {
-            return 2;
-        }
-        public static RetCode Ceil(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Ceil(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -31908,11 +31157,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CeilLookback()
-        {
-            return 0;
-        }
-        public static RetCode Cmo(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Cmo(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32066,21 +31311,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int CmoLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            int retValue = optInTimePeriod + ((int)Globals.unstablePeriod[3]);
-            if (Globals.compatibility == Compatibility.Metastock) {
-                retValue--;
-            }
-            return retValue;
-        }
-        public static RetCode Correl(int startIdx, int endIdx, double[] inReal0, double[] inReal1, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Correl(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double y;
             double x;
@@ -32173,17 +31404,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int CorrelLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Cos(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Cos(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32208,11 +31429,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CosLookback()
-        {
-            return 0;
-        }
-        public static RetCode Cosh(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Cosh(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32237,11 +31454,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int CoshLookback()
-        {
-            return 0;
-        }
-        public static RetCode Dema(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Dema(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32312,17 +31525,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int DemaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (EmaLookback(optInTimePeriod) * 2);
-        }
-        public static RetCode Div(int startIdx, int endIdx, double[] inReal0, double[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Div(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32350,11 +31553,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int DivLookback()
-        {
-            return 0;
-        }
-        public static RetCode Dx(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Dx(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             double tempReal2;
@@ -32533,20 +31732,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int DxLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return (optInTimePeriod + ((int)Globals.unstablePeriod[4]));
-            }
-            return 2;
-        }
-        public static RetCode Ema(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Ema(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32568,17 +31754,7 @@ namespace TALibrary
             }
             return TA_INT_EMA(startIdx, endIdx, inReal, optInTimePeriod, 2.0 / ((double)(optInTimePeriod + 1)), ref outBegIdx, ref outNBElement, outReal);
         }
-        public static int EmaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return ((optInTimePeriod - 1) + ((int)Globals.unstablePeriod[5]));
-        }
-        public static RetCode Exp(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Exp(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32603,11 +31779,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int ExpLookback()
-        {
-            return 0;
-        }
-        public static RetCode Floor(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Floor(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -32632,11 +31804,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int FloorLookback()
-        {
-            return 0;
-        }
-        public static RetCode HtDcPeriod(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode HtDcPeriod(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -32894,11 +32062,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int HtDcPeriodLookback()
-        {
-            return (((int)Globals.unstablePeriod[6]) + 0x20);
-        }
-        public static RetCode HtDcPhase(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode HtDcPhase(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -33211,11 +32375,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int HtDcPhaseLookback()
-        {
-            return (((int)Globals.unstablePeriod[7]) + 0x3f);
-        }
-        public static RetCode HtPhasor(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outInPhase, double[] outQuadrature)
+        public static RetCode HtPhasor(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outInPhase,double[] outQuadrature)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -33480,11 +32640,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int HtPhasorLookback()
-        {
-            return (((int)Globals.unstablePeriod[8]) + 0x20);
-        }
-        public static RetCode HtSine(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outSine, double[] outLeadSine)
+        public static RetCode HtSine(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outSine,double[] outLeadSine)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -33802,11 +32958,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int HtSineLookback()
-        {
-            return (((int)Globals.unstablePeriod[9]) + 0x3f);
-        }
-        public static RetCode HtTrendline(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode HtTrendline(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -34098,11 +33250,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int HtTrendlineLookback()
-        {
-            return (((int)Globals.unstablePeriod[10]) + 0x3f);
-        }
-        public static RetCode HtTrendMode(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode HtTrendMode(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,int[] outInteger)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -34465,11 +33613,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int HtTrendModeLookback()
-        {
-            return (((int)Globals.unstablePeriod[11]) + 0x3f);
-        }
-        public static RetCode Kama(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Kama(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double tempReal;
             const double constMax = 0.064516129032258063;
@@ -34585,17 +33729,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int KamaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod + ((int)Globals.unstablePeriod[12]));
-        }
-        public static RetCode LinearReg(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode LinearReg(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34654,17 +33788,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int LinearRegLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode LinearRegAngle(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode LinearRegAngle(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34722,17 +33846,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int LinearRegAngleLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode LinearRegIntercept(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode LinearRegIntercept(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34790,17 +33904,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int LinearRegInterceptLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode LinearRegSlope(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode LinearRegSlope(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34857,17 +33961,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int LinearRegSlopeLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Ln(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Ln(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34892,11 +33986,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int LnLookback()
-        {
-            return 0;
-        }
-        public static RetCode Log10(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Log10(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34921,11 +34011,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int Log10Lookback()
-        {
-            return 0;
-        }
-        public static RetCode Macd(int startIdx, int endIdx, double[] inReal, int optInFastPeriod, int optInSlowPeriod, int optInSignalPeriod, ref int outBegIdx, ref int outNBElement, double[] outMACD, double[] outMACDSignal, double[] outMACDHist)
+        public static RetCode Macd(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInFastPeriod,int optInSlowPeriod,int optInSignalPeriod,ref int outBegIdx,ref int outNBElement,double[] outMACD,double[] outMACDSignal,double[] outMACDHist)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -34965,34 +34051,7 @@ namespace TALibrary
             }
             return TA_INT_MACD(startIdx, endIdx, inReal, optInFastPeriod, optInSlowPeriod, optInSignalPeriod, ref outBegIdx, ref outNBElement, outMACD, outMACDSignal, outMACDHist);
         }
-        public static int MacdLookback(int optInFastPeriod, int optInSlowPeriod, int optInSignalPeriod)
-        {
-            if (optInFastPeriod == -2147483648) {
-                optInFastPeriod = 12;
-            }
-            else if ((optInFastPeriod < 2) || (optInFastPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod == -2147483648) {
-                optInSlowPeriod = 0x1a;
-            }
-            else if ((optInSlowPeriod < 2) || (optInSlowPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSignalPeriod == -2147483648) {
-                optInSignalPeriod = 9;
-            }
-            else if ((optInSignalPeriod < 1) || (optInSignalPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod < optInFastPeriod) {
-                int tempInteger = optInSlowPeriod;
-                optInSlowPeriod = optInFastPeriod;
-                optInFastPeriod = tempInteger;
-            }
-            return (EmaLookback(optInSlowPeriod) + EmaLookback(optInSignalPeriod));
-        }
-        public static RetCode MacdExt(int startIdx, int endIdx, double[] inReal, int optInFastPeriod, MAType optInFastMAType, int optInSlowPeriod, MAType optInSlowMAType, int optInSignalPeriod, MAType optInSignalMAType, ref int outBegIdx, ref int outNBElement, double[] outMACD, double[] outMACDSignal, double[] outMACDHist)
+        public static RetCode MacdExt(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInFastPeriod,MAType optInFastMAType,int optInSlowPeriod,MAType optInSlowMAType,int optInSignalPeriod,MAType optInSignalMAType,ref int outBegIdx,ref int outNBElement,double[] outMACD,double[] outMACDSignal,double[] outMACDHist)
         {
             int i;
             int tempInteger = 0;
@@ -35107,34 +34166,7 @@ namespace TALibrary
             outNBElement = outNbElement2;
             return RetCode.Success;
         }
-        public static int MacdExtLookback(int optInFastPeriod, MAType optInFastMAType, int optInSlowPeriod, MAType optInSlowMAType, int optInSignalPeriod, MAType optInSignalMAType)
-        {
-            if (optInFastPeriod == -2147483648) {
-                optInFastPeriod = 12;
-            }
-            else if ((optInFastPeriod < 2) || (optInFastPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod == -2147483648) {
-                optInSlowPeriod = 0x1a;
-            }
-            else if ((optInSlowPeriod < 2) || (optInSlowPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSignalPeriod == -2147483648) {
-                optInSignalPeriod = 9;
-            }
-            else if ((optInSignalPeriod < 1) || (optInSignalPeriod > 0x186a0)) {
-                return -1;
-            }
-            int lookbackLargest = MovingAverageLookback(optInFastPeriod, optInFastMAType);
-            int tempInteger = MovingAverageLookback(optInSlowPeriod, optInSlowMAType);
-            if (tempInteger > lookbackLargest) {
-                lookbackLargest = tempInteger;
-            }
-            return (lookbackLargest + MovingAverageLookback(optInSignalPeriod, optInSignalMAType));
-        }
-        public static RetCode MacdFix(int startIdx, int endIdx, double[] inReal, int optInSignalPeriod, ref int outBegIdx, ref int outNBElement, double[] outMACD, double[] outMACDSignal, double[] outMACDHist)
+        public static RetCode MacdFix(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInSignalPeriod,ref int outBegIdx,ref int outNBElement,double[] outMACD,double[] outMACDSignal,double[] outMACDHist)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35162,17 +34194,7 @@ namespace TALibrary
             }
             return TA_INT_MACD(startIdx, endIdx, inReal, 0, 0, optInSignalPeriod, ref outBegIdx, ref outNBElement, outMACD, outMACDSignal, outMACDHist);
         }
-        public static int MacdFixLookback(int optInSignalPeriod)
-        {
-            if (optInSignalPeriod == -2147483648) {
-                optInSignalPeriod = 9;
-            }
-            else if ((optInSignalPeriod < 1) || (optInSignalPeriod > 0x186a0)) {
-                return -1;
-            }
-            return (EmaLookback(0x1a) + EmaLookback(optInSignalPeriod));
-        }
-        public static RetCode Mama(int startIdx, int endIdx, double[] inReal, double optInFastLimit, double optInSlowLimit, ref int outBegIdx, ref int outNBElement, double[] outMAMA, double[] outFAMA)
+        public static RetCode Mama(int startIdx,int endIdx,SmartQuant.ISeries inReal,double optInFastLimit,double optInSlowLimit,ref int outBegIdx,ref int outNBElement,double[] outMAMA,double[] outFAMA)
         {
             double smoothedValue;
             const double a = 0.0962;
@@ -35477,23 +34499,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int MamaLookback(double optInFastLimit, double optInSlowLimit)
-        {
-            if (optInFastLimit == -4E+37) {
-                optInFastLimit = 0.5;
-            }
-            else if ((optInFastLimit < 0.01) || (optInFastLimit > 0.99)) {
-                return -1;
-            }
-            if (optInSlowLimit == -4E+37) {
-                optInSlowLimit = 0.05;
-            }
-            else if ((optInSlowLimit < 0.01) || (optInSlowLimit > 0.99)) {
-                return -1;
-            }
-            return (((int)Globals.unstablePeriod[13]) + 0x20);
-        }
-        public static RetCode Max(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Max(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35561,17 +34567,7 @@ namespace TALibrary
             today++;
             goto Label_008A;
         }
-        public static int MaxLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MaxIndex(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode MaxIndex(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,int[] outInteger)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35639,17 +34635,7 @@ namespace TALibrary
             today++;
             goto Label_008B;
         }
-        public static int MaxIndexLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MedPrice(int startIdx, int endIdx, double[] inHigh, double[] inLow, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MedPrice(int startIdx,int endIdx,double[] inHigh,double[] inLow,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35672,11 +34658,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int MedPriceLookback()
-        {
-            return 0;
-        }
-        public static RetCode Mfi(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, double[] inVolume, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Mfi(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,double[] inVolume,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int mflow_Idx = 0;
             int maxIdx_mflow = 0x31;
@@ -35830,17 +34812,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int MfiLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod + ((int)Globals.unstablePeriod[14]));
-        }
-        public static RetCode MidPoint(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MidPoint(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35895,17 +34867,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int MidPointLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MidPrice(int startIdx, int endIdx, double[] inHigh, double[] inLow, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MidPrice(int startIdx,int endIdx,double[] inHigh,double[] inLow,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -35961,17 +34923,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int MidPriceLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Min(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Min(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -36039,17 +34991,7 @@ namespace TALibrary
             today++;
             goto Label_008A;
         }
-        public static int MinLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MinIndex(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, int[] outInteger)
+        public static RetCode MinIndex(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,int[] outInteger)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -36117,17 +35059,7 @@ namespace TALibrary
             today++;
             goto Label_008B;
         }
-        public static int MinIndexLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MinMax(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outMin, double[] outMax)
+        public static RetCode MinMax(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outMin,double[] outMax)
         {
             int i;
             if (startIdx < 0) {
@@ -36224,17 +35156,7 @@ namespace TALibrary
             today++;
             goto Label_00A5;
         }
-        public static int MinMaxLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MinMaxIndex(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, int[] outMinIdx, int[] outMaxIdx)
+        public static RetCode MinMaxIndex(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,int[] outMinIdx,int[] outMaxIdx)
         {
             int i;
             if (startIdx < 0) {
@@ -36331,17 +35253,7 @@ namespace TALibrary
             today++;
             goto Label_00AA;
         }
-        public static int MinMaxIndexLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode MinusDI(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MinusDI(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             int today;
@@ -36540,20 +35452,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int MinusDILookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return (optInTimePeriod + ((int)Globals.unstablePeriod[15]));
-            }
-            return 1;
-        }
-        public static RetCode MinusDM(int startIdx, int endIdx, double[] inHigh, double[] inLow, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MinusDM(int startIdx,int endIdx,double[] inHigh,double[] inLow,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             int today;
@@ -36685,20 +35584,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int MinusDMLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return ((optInTimePeriod + ((int)Globals.unstablePeriod[0x10])) - 1);
-            }
-            return 1;
-        }
-        public static RetCode Mom(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Mom(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -36742,17 +35628,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int MomLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 10;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode MovingAverage(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MovingAverage(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -36819,47 +35695,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int MovingAverageLookback(int optInTimePeriod, MAType optInMAType)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                switch (optInMAType) {
-                    case MAType.Sma:
-                        return SmaLookback(optInTimePeriod);
-
-                    case MAType.Ema:
-                        return EmaLookback(optInTimePeriod);
-
-                    case MAType.Wma:
-                        return WmaLookback(optInTimePeriod);
-
-                    case MAType.Dema:
-                        return DemaLookback(optInTimePeriod);
-
-                    case MAType.Tema:
-                        return TemaLookback(optInTimePeriod);
-
-                    case MAType.Trima:
-                        return TrimaLookback(optInTimePeriod);
-
-                    case MAType.Kama:
-                        return KamaLookback(optInTimePeriod);
-
-                    case MAType.Mama:
-                        return MamaLookback(0.5, 0.05);
-
-                    case MAType.T3:
-                        return T3Lookback(optInTimePeriod, 0.7);
-                }
-            }
-            return 0;
-        }
-        public static RetCode MovingAverageVariablePeriod(int startIdx, int endIdx, double[] inReal, double[] inPeriods, int optInMinPeriod, int optInMaxPeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode MovingAverageVariablePeriod(int startIdx,int endIdx,SmartQuant.ISeries inReal,double[] inPeriods,int optInMinPeriod,int optInMaxPeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int i;
             int tempInt = 0;
@@ -36951,23 +35787,7 @@ namespace TALibrary
                 i++;
             }
         }
-        public static int MovingAverageVariablePeriodLookback(int optInMinPeriod, int optInMaxPeriod, MAType optInMAType)
-        {
-            if (optInMinPeriod == -2147483648) {
-                optInMinPeriod = 2;
-            }
-            else if ((optInMinPeriod < 2) || (optInMinPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInMaxPeriod == -2147483648) {
-                optInMaxPeriod = 30;
-            }
-            else if ((optInMaxPeriod < 2) || (optInMaxPeriod > 0x186a0)) {
-                return -1;
-            }
-            return MovingAverageLookback(optInMaxPeriod, optInMAType);
-        }
-        public static RetCode Mult(int startIdx, int endIdx, double[] inReal0, double[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Mult(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -36995,11 +35815,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int MultLookback()
-        {
-            return 0;
-        }
-        public static RetCode Natr(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Natr(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int outNbElement1 = 0;
             int outBegIdx1 = 0;
@@ -37086,17 +35902,7 @@ namespace TALibrary
             }
             return retCode;
         }
-        public static int NatrLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod + ((int)Globals.unstablePeriod[0x11]));
-        }
-        public static RetCode Obv(int startIdx, int endIdx, double[] inReal, double[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Obv(int startIdx,int endIdx,SmartQuant.ISeries inReal,double[] inVolume,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37132,11 +35938,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int ObvLookback()
-        {
-            return 0;
-        }
-        public static RetCode PlusDI(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode PlusDI(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             int today;
@@ -37335,20 +36137,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int PlusDILookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return (optInTimePeriod + ((int)Globals.unstablePeriod[0x12]));
-            }
-            return 1;
-        }
-        public static RetCode PlusDM(int startIdx, int endIdx, double[] inHigh, double[] inLow, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode PlusDM(int startIdx,int endIdx,double[] inHigh,double[] inLow,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double tempReal;
             int today;
@@ -37480,20 +36269,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int PlusDMLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod > 1) {
-                return ((optInTimePeriod + ((int)Globals.unstablePeriod[0x13])) - 1);
-            }
-            return 1;
-        }
-        public static RetCode Ppo(int startIdx, int endIdx, double[] inReal, int optInFastPeriod, int optInSlowPeriod, MAType optInMAType, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Ppo(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInFastPeriod,int optInSlowPeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37525,23 +36301,7 @@ namespace TALibrary
             }
             return TA_INT_PO(startIdx, endIdx, inReal, optInFastPeriod, optInSlowPeriod, optInMAType, ref outBegIdx, ref outNBElement, outReal, tempBuffer, 1);
         }
-        public static int PpoLookback(int optInFastPeriod, int optInSlowPeriod, MAType optInMAType)
-        {
-            if (optInFastPeriod == -2147483648) {
-                optInFastPeriod = 12;
-            }
-            else if ((optInFastPeriod < 2) || (optInFastPeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowPeriod == -2147483648) {
-                optInSlowPeriod = 0x1a;
-            }
-            else if ((optInSlowPeriod < 2) || (optInSlowPeriod > 0x186a0)) {
-                return -1;
-            }
-            return MovingAverageLookback((optInSlowPeriod <= optInFastPeriod) ? optInFastPeriod : optInSlowPeriod, optInMAType);
-        }
-        public static RetCode Roc(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Roc(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37592,17 +36352,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int RocLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 10;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode RocP(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode RocP(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37653,17 +36403,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int RocPLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 10;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode RocR(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode RocR(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37714,17 +36454,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int RocRLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 10;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode RocR100(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode RocR100(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37775,17 +36505,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int RocR100Lookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 10;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return optInTimePeriod;
-        }
-        public static RetCode Rsi(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Rsi(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -37938,21 +36658,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int RsiLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            int retValue = optInTimePeriod + ((int)Globals.unstablePeriod[20]);
-            if (Globals.compatibility == Compatibility.Metastock) {
-                retValue--;
-            }
-            return retValue;
-        }
-        public static RetCode Sar(int startIdx, int endIdx, double[] inHigh, double[] inLow, double optInAcceleration, double optInMaximum, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sar(int startIdx,int endIdx,double[] inHigh,double[] inLow,double optInAcceleration,double optInMaximum,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double sar;
             double ep;
@@ -38113,23 +36819,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int SarLookback(double optInAcceleration, double optInMaximum)
-        {
-            if (optInAcceleration == -4E+37) {
-                optInAcceleration = 0.02;
-            }
-            else if ((optInAcceleration < 0.0) || (optInAcceleration > 3E+37)) {
-                return -1;
-            }
-            if (optInMaximum == -4E+37) {
-                optInMaximum = 0.2;
-            }
-            else if ((optInMaximum < 0.0) || (optInMaximum > 3E+37)) {
-                return -1;
-            }
-            return 1;
-        }
-        public static RetCode SarExt(int startIdx, int endIdx, double[] inHigh, double[] inLow, double optInStartValue, double optInOffsetOnReverse, double optInAccelerationInitLong, double optInAccelerationLong, double optInAccelerationMaxLong, double optInAccelerationInitShort, double optInAccelerationShort, double optInAccelerationMaxShort, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode SarExt(int startIdx,int endIdx,double[] inHigh,double[] inLow,double optInStartValue,double optInOffsetOnReverse,double optInAccelerationInitLong,double optInAccelerationLong,double optInAccelerationMaxLong,double optInAccelerationInitShort,double optInAccelerationShort,double optInAccelerationMaxShort,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             double sar;
             double ep;
@@ -38361,59 +37051,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int SarExtLookback(double optInStartValue, double optInOffsetOnReverse, double optInAccelerationInitLong, double optInAccelerationLong, double optInAccelerationMaxLong, double optInAccelerationInitShort, double optInAccelerationShort, double optInAccelerationMaxShort)
-        {
-            if (optInStartValue == -4E+37) {
-                optInStartValue = 0.0;
-            }
-            else if ((optInStartValue < -3E+37) || (optInStartValue > 3E+37)) {
-                return -1;
-            }
-            if (optInOffsetOnReverse == -4E+37) {
-                optInOffsetOnReverse = 0.0;
-            }
-            else if ((optInOffsetOnReverse < 0.0) || (optInOffsetOnReverse > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationInitLong == -4E+37) {
-                optInAccelerationInitLong = 0.02;
-            }
-            else if ((optInAccelerationInitLong < 0.0) || (optInAccelerationInitLong > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationLong == -4E+37) {
-                optInAccelerationLong = 0.02;
-            }
-            else if ((optInAccelerationLong < 0.0) || (optInAccelerationLong > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationMaxLong == -4E+37) {
-                optInAccelerationMaxLong = 0.2;
-            }
-            else if ((optInAccelerationMaxLong < 0.0) || (optInAccelerationMaxLong > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationInitShort == -4E+37) {
-                optInAccelerationInitShort = 0.02;
-            }
-            else if ((optInAccelerationInitShort < 0.0) || (optInAccelerationInitShort > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationShort == -4E+37) {
-                optInAccelerationShort = 0.02;
-            }
-            else if ((optInAccelerationShort < 0.0) || (optInAccelerationShort > 3E+37)) {
-                return -1;
-            }
-            if (optInAccelerationMaxShort == -4E+37) {
-                optInAccelerationMaxShort = 0.2;
-            }
-            else if ((optInAccelerationMaxShort < 0.0) || (optInAccelerationMaxShort > 3E+37)) {
-                return -1;
-            }
-            return 1;
-        }
-        public static RetCode Sin(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sin(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -38438,11 +37076,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int SinLookback()
-        {
-            return 0;
-        }
-        public static RetCode Sinh(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sinh(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -38467,11 +37101,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int SinhLookback()
-        {
-            return 0;
-        }
-        public static RetCode Sma(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sma(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -38493,17 +37123,7 @@ namespace TALibrary
             }
             return TA_INT_SMA(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
         }
-        public static int SmaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Sqrt(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sqrt(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -38528,11 +37148,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int SqrtLookback()
-        {
-            return 0;
-        }
-        public static RetCode StdDev(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, double optInNbDev, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode StdDev(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,double optInNbDev,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int i;
             double tempReal;
@@ -38590,23 +37206,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int StdDevLookback(int optInTimePeriod, double optInNbDev)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 5;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInNbDev == -4E+37) {
-                optInNbDev = 1.0;
-            }
-            else if ((optInNbDev < -3E+37) || (optInNbDev > 3E+37)) {
-                return -1;
-            }
-            return VarianceLookback(optInTimePeriod, optInNbDev);
-        }
-        public static RetCode Stoch(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInFastK_Period, int optInSlowK_Period, MAType optInSlowK_MAType, int optInSlowD_Period, MAType optInSlowD_MAType, ref int outBegIdx, ref int outNBElement, double[] outSlowK, double[] outSlowD)
+        public static RetCode Stoch(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInFastK_Period,int optInSlowK_Period,MAType optInSlowK_MAType,int optInSlowD_Period,MAType optInSlowD_MAType,ref int outBegIdx,ref int outNBElement,double[] outSlowK,double[] outSlowD,SmartQuant.ISeries inBar)
         {
             double[] tempBuffer;
             if (startIdx < 0) {
@@ -38749,31 +37349,7 @@ namespace TALibrary
             today++;
             goto Label_0156;
         }
-        public static int StochLookback(int optInFastK_Period, int optInSlowK_Period, MAType optInSlowK_MAType, int optInSlowD_Period, MAType optInSlowD_MAType)
-        {
-            if (optInFastK_Period == -2147483648) {
-                optInFastK_Period = 5;
-            }
-            else if ((optInFastK_Period < 1) || (optInFastK_Period > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowK_Period == -2147483648) {
-                optInSlowK_Period = 3;
-            }
-            else if ((optInSlowK_Period < 1) || (optInSlowK_Period > 0x186a0)) {
-                return -1;
-            }
-            if (optInSlowD_Period == -2147483648) {
-                optInSlowD_Period = 3;
-            }
-            else if ((optInSlowD_Period < 1) || (optInSlowD_Period > 0x186a0)) {
-                return -1;
-            }
-            int retValue = optInFastK_Period - 1;
-            retValue += MovingAverageLookback(optInSlowK_Period, optInSlowK_MAType);
-            return (retValue + MovingAverageLookback(optInSlowD_Period, optInSlowD_MAType));
-        }
-        public static RetCode StochF(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInFastK_Period, int optInFastD_Period, MAType optInFastD_MAType, ref int outBegIdx, ref int outNBElement, double[] outFastK, double[] outFastD)
+        public static RetCode StochF(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInFastK_Period,int optInFastD_Period,MAType optInFastD_MAType,ref int outBegIdx,ref int outNBElement,double[] outFastK,double[] outFastD,SmartQuant.ISeries inBar)
         {
             double[] tempBuffer;
             if (startIdx < 0) {
@@ -38908,24 +37484,7 @@ namespace TALibrary
             today++;
             goto Label_0124;
         }
-        public static int StochFLookback(int optInFastK_Period, int optInFastD_Period, MAType optInFastD_MAType)
-        {
-            if (optInFastK_Period == -2147483648) {
-                optInFastK_Period = 5;
-            }
-            else if ((optInFastK_Period < 1) || (optInFastK_Period > 0x186a0)) {
-                return -1;
-            }
-            if (optInFastD_Period == -2147483648) {
-                optInFastD_Period = 3;
-            }
-            else if ((optInFastD_Period < 1) || (optInFastD_Period > 0x186a0)) {
-                return -1;
-            }
-            int retValue = optInFastK_Period - 1;
-            return (retValue + MovingAverageLookback(optInFastD_Period, optInFastD_MAType));
-        }
-        public static RetCode StochRsi(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, int optInFastK_Period, int optInFastD_Period, MAType optInFastD_MAType, ref int outBegIdx, ref int outNBElement, double[] outFastK, double[] outFastD)
+        public static RetCode StochRsi(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,int optInFastK_Period,int optInFastD_Period,MAType optInFastD_MAType,ref int outBegIdx,ref int outNBElement,double[] outFastK,double[] outFastD)
         {
             int outNbElement1 = 0;
             int outBegIdx2 = 0;
@@ -38992,29 +37551,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int StochRsiLookback(int optInTimePeriod, int optInFastK_Period, int optInFastD_Period, MAType optInFastD_MAType)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInFastK_Period == -2147483648) {
-                optInFastK_Period = 5;
-            }
-            else if ((optInFastK_Period < 1) || (optInFastK_Period > 0x186a0)) {
-                return -1;
-            }
-            if (optInFastD_Period == -2147483648) {
-                optInFastD_Period = 3;
-            }
-            else if ((optInFastD_Period < 1) || (optInFastD_Period > 0x186a0)) {
-                return -1;
-            }
-            return (RsiLookback(optInTimePeriod) + StochFLookback(optInFastK_Period, optInFastD_Period, optInFastD_MAType));
-        }
-        public static RetCode Sub(int startIdx, int endIdx, double[] inReal0, double[] inReal1, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sub(int startIdx,int endIdx,SmartQuant.ISeries inReal0,SmartQuant.ISeries inReal1,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39042,11 +37579,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int SubLookback()
-        {
-            return 0;
-        }
-        public static RetCode Sum(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Sum(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39099,17 +37632,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int SumLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode T3(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, double optInVFactor, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode T3(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,double optInVFactor,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int i;
             if (startIdx < 0) {
@@ -39238,23 +37761,7 @@ namespace TALibrary
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static int T3Lookback(int optInTimePeriod, double optInVFactor)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 5;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInVFactor == -4E+37) {
-                optInVFactor = 0.7;
-            }
-            else if ((optInVFactor < 0.0) || (optInVFactor > 1.0)) {
-                return -1;
-            }
-            return (((optInTimePeriod - 1) * 6) + ((int)Globals.unstablePeriod[0x16]));
-        }
-        public static RetCode Tan(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Tan(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39279,11 +37786,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int TanLookback()
-        {
-            return 0;
-        }
-        public static RetCode Tanh(int startIdx, int endIdx, double[] inReal, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Tanh(int startIdx,int endIdx,SmartQuant.ISeries inReal,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39308,11 +37811,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int TanhLookback()
-        {
-            return 0;
-        }
-        public static RetCode Tema(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Tema(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39385,17 +37884,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int TemaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (EmaLookback(optInTimePeriod) * 3);
-        }
-        public static RetCode Trima(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Trima(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int i;
             double tempReal;
@@ -39530,17 +38019,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int TrimaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Trix(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Trix(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int nbElement = 0;
             int begIdx = 0;
@@ -39612,17 +38091,7 @@ namespace TALibrary
             }
             return RetCode.Success;
         }
-        public static int TrixLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return ((EmaLookback(optInTimePeriod) * 3) + RocRLookback(1));
-        }
-        public static RetCode TrueRange(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode TrueRange(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39670,11 +38139,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int TrueRangeLookback()
-        {
-            return 1;
-        }
-        public static RetCode Tsf(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Tsf(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39733,17 +38198,7 @@ namespace TALibrary
                 today++;
             }
         }
-        public static int TsfLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode TypPrice(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode TypPrice(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -39766,11 +38221,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int TypPriceLookback()
-        {
-            return 0;
-        }
-        public static RetCode UltOsc(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod1, int optInTimePeriod2, int optInTimePeriod3, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode UltOsc(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod1,int optInTimePeriod2,int optInTimePeriod3,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             int outIdx;
             int[] usedFlag = new int[3];
@@ -40056,37 +38507,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int UltOscLookback(int optInTimePeriod1, int optInTimePeriod2, int optInTimePeriod3)
-        {
-            int num2;
-            if (optInTimePeriod1 == -2147483648) {
-                optInTimePeriod1 = 7;
-            }
-            else if ((optInTimePeriod1 < 1) || (optInTimePeriod1 > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod2 == -2147483648) {
-                optInTimePeriod2 = 14;
-            }
-            else if ((optInTimePeriod2 < 1) || (optInTimePeriod2 > 0x186a0)) {
-                return -1;
-            }
-            if (optInTimePeriod3 == -2147483648) {
-                optInTimePeriod3 = 0x1c;
-            }
-            else if ((optInTimePeriod3 < 1) || (optInTimePeriod3 > 0x186a0)) {
-                return -1;
-            }
-            if (((optInTimePeriod1 <= optInTimePeriod2) ? optInTimePeriod2 : optInTimePeriod1) > optInTimePeriod3) {
-                num2 = (optInTimePeriod1 <= optInTimePeriod2) ? optInTimePeriod2 : optInTimePeriod1;
-            }
-            else {
-                num2 = optInTimePeriod3;
-            }
-            int maxPeriod = num2;
-            return (SmaLookback(maxPeriod) + 1);
-        }
-        public static RetCode Variance(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, double optInNbDev, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Variance(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,double optInNbDev,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -40114,23 +38535,7 @@ namespace TALibrary
             }
             return TA_INT_VAR(startIdx, endIdx, inReal, optInTimePeriod, ref outBegIdx, ref outNBElement, outReal);
         }
-        public static int VarianceLookback(int optInTimePeriod, double optInNbDev)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 5;
-            }
-            else if ((optInTimePeriod < 1) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            if (optInNbDev == -4E+37) {
-                optInNbDev = 1.0;
-            }
-            else if ((optInNbDev < -3E+37) || (optInNbDev > 3E+37)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode WclPrice(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode WclPrice(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -40153,11 +38558,7 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int WclPriceLookback()
-        {
-            return 0;
-        }
-        public static RetCode WillR(int startIdx, int endIdx, double[] inHigh, double[] inLow, double[] inClose, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode WillR(int startIdx,int endIdx,double[] inHigh,double[] inLow,double[] inClose,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal,SmartQuant.ISeries inBar)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -40261,17 +38662,7 @@ namespace TALibrary
             today++;
             goto Label_00B1;
         }
-        public static int WillRLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 14;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        public static RetCode Wma(int startIdx, int endIdx, double[] inReal, int optInTimePeriod, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Wma(int startIdx,int endIdx,SmartQuant.ISeries inReal,int optInTimePeriod,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             double tempReal;
             if (startIdx < 0) {
@@ -40344,105 +38735,5 @@ namespace TALibrary
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static int WmaLookback(int optInTimePeriod)
-        {
-            if (optInTimePeriod == -2147483648) {
-                optInTimePeriod = 30;
-            }
-            else if ((optInTimePeriod < 2) || (optInTimePeriod > 0x186a0)) {
-                return -1;
-            }
-            return (optInTimePeriod - 1);
-        }
-        #region Public Nested Classes
-        public enum CandleSettingType
-        {
-            BodyLong,
-            BodyVeryLong,
-            BodyShort,
-            BodyDoji,
-            ShadowLong,
-            ShadowVeryLong,
-            ShadowShort,
-            ShadowVeryShort,
-            Near,
-            Far,
-            Equal,
-            AllCandleSettings
-        }
-        public enum Compatibility
-        {
-            Default,
-            Metastock
-        }
-        public enum FuncUnstId
-        {
-            Adx = 0,
-            Adxr = 1,
-            Atr = 2,
-            Cmo = 3,
-            Dx = 4,
-            Ema = 5,
-            FuncUnstAll = 0x17,
-            FuncUnstNone = -1,
-            HtDcPeriod = 6,
-            HtDcPhase = 7,
-            HtPhasor = 8,
-            HtSine = 9,
-            HtTrendline = 10,
-            HtTrendMode = 11,
-            Kama = 12,
-            Mama = 13,
-            Mfi = 14,
-            MinusDI = 15,
-            MinusDM = 0x10,
-            Natr = 0x11,
-            PlusDI = 0x12,
-            PlusDM = 0x13,
-            Rsi = 20,
-            StochRsi = 0x15,
-            T3 = 0x16
-        }
-        public enum MAType
-        {
-            Sma,
-            Ema,
-            Wma,
-            Dema,
-            Tema,
-            Trima,
-            Kama,
-            Mama,
-            T3
-        }
-        public enum RangeType
-        {
-            RealBody,
-            HighLow,
-            Shadows
-        }
-        public enum RetCode
-        {
-            AllocErr = 3,
-            BadObject = 15,
-            BadParam = 2,
-            FuncNotFound = 5,
-            GroupNotFound = 4,
-            InputNotAllInitialize = 10,
-            InternalError = 0x1388,
-            InvalidHandle = 6,
-            InvalidListType = 14,
-            InvalidParamFunction = 9,
-            InvalidParamHolder = 7,
-            InvalidParamHolderType = 8,
-            LibNotInitialize = 1,
-            NotSupported = 0x10,
-            OutOfRangeEndIndex = 13,
-            OutOfRangeStartIndex = 12,
-            OutputNotAllInitialize = 11,
-            Success = 0,
-            UnknownErr = 0xffff
-        }
-        #endregion
-    }
+}
 }

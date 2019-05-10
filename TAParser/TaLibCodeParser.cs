@@ -52,7 +52,9 @@ namespace TAParser
                         if (method.ParameterList.Parameters.Any(IsFloatArray)) {
                             break;
                         }
-                        MethodMembers.Add((MethodDeclarationSyntax)node);
+                        if (method.ParameterList.Parameters.Count > 0 && IsInParameter(method.ParameterList.Parameters.First())) {
+                            MethodMembers.Add((MethodDeclarationSyntax)node);
+                        }
                     }
                     break;
                 case SyntaxKind.EnumDeclaration:
@@ -61,6 +63,12 @@ namespace TAParser
                     break;
             }
             base.Visit(node);
+
+            bool IsInParameter(ParameterSyntax p)
+            {
+                var name = p.Identifier.Text;
+                return name.StartsWith("in") || name == "startIdx" || name == "endIdx";
+            }
 
             bool IsFloatArray(ParameterSyntax p)
             {
@@ -84,36 +92,11 @@ namespace TAParser
                 writer.WriteLine("using System;");
                 writer.WriteLine("namespace TALibrary");
                 writer.WriteLine("{");
-                writer.WriteLine("public class TA4OpenQuant");
+                writer.WriteLine("public partial class Core");
                 writer.WriteLine("{");
-                writer.WriteLine("#region Private Members");
-                foreach (var c in _innerClasses) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                foreach (var c in _fieldMembers) {
+                foreach (var c in MethodMembers) {
                     c.WriteTo(writer);
                 }
-                foreach (var c in MethodMembers) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PrivateKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine(" static TA4OpenQuant() { RestoreCandleDefaultSettings(CandleSettingType.AllCandleSettings); }");
-                writer.WriteLine("#endregion");
-                foreach (var c in MethodMembers) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine("#region Public Nested Classes");
-                foreach (var c in _innerClasses) {
-                    if (c.Modifiers.Any(n => n.IsKind(SyntaxKind.PublicKeyword))) {
-                        c.WriteTo(writer);
-                    }
-                }
-                writer.WriteLine("#endregion");
                 writer.WriteLine("}");
                 writer.WriteLine("}");
             }

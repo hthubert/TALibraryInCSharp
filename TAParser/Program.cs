@@ -11,6 +11,7 @@ namespace TAParser
     internal class Ta4OpenQuantRewriter : CSharpSyntaxRewriter
     {
         private static readonly string[] BarDataItems = { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
+        private readonly HashSet<string> _paramsAdded = new HashSet<string>();
 
         private static bool IsDoubleArray(ParameterSyntax p)
         {
@@ -25,10 +26,25 @@ namespace TAParser
             return Array.IndexOf(BarDataItems, name) >= 0;
         }
 
+        private static bool IsInReal(ParameterSyntax p)
+        {
+            var name = p.Identifier.Text;
+            return name.StartsWith("inReal");
+        }
+
         private static bool IsInParameter(ParameterSyntax p)
         {
             var name = p.Identifier.Text;
             return name.StartsWith("in") || name == "startIdx" || name == "endIdx";
+        }
+
+        public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            if (_paramsAdded.Contains(node.Expression.ToString())) {
+                //node.ArgumentList
+            }
+            //SyntaxFactory.ParseExpression()
+            return base.VisitInvocationExpression(node);
         }
 
         public override SyntaxNode VisitParameterList(ParameterListSyntax node)
@@ -36,24 +52,29 @@ namespace TAParser
             if (node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
                 var paramList = new StringBuilder();
                 var hasBarData = false;
+
                 foreach (var parameter in node.Parameters) {
+                    if (paramList.Length > 0) {
+                        paramList.Append(",");
+                    }
                     if (IsDoubleArray(parameter) && IsInParameter(parameter)) {
                         if (IsBarData(parameter)) {
                             hasBarData = true;
                         }
-                        else {
+                        else if (IsInReal(parameter)) {
                             paramList.Append($"SmartQuant.ISeries {parameter.Identifier.Text}");
                             continue;
                         }
                     }
-                    //paramList.Parameters.Add(parameter);
+                    paramList.Append(parameter.ToString());
                 }
 
                 if (hasBarData) {
-
+                    _paramsAdded.Add(((MethodDeclarationSyntax)node.Parent).Identifier.Text);
+                    paramList.Append($",SmartQuant.ISeries inBar");
                 }
 
-                //return paramList;
+                return SyntaxFactory.ParseParameterList($"({paramList.ToString()})\r\n");
             }
             return base.VisitParameterList(node);
         }
@@ -61,11 +82,6 @@ namespace TAParser
         public override SyntaxNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
             return base.VisitElementAccessExpression(node);
-        }
-
-        public void Test(SmartQuant.ISeries input)
-        {
-            SmartQuant.ISeries input1 = null;
         }
 
     }
