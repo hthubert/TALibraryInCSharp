@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utility.cs" />
     <Compile Include="TA4OpenQuant.cs" />
     <Compile Include="TACore.cs">
     </Compile>

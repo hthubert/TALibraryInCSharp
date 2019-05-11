@@ -10,8 +10,9 @@ namespace TAParser
 {
     internal class Ta4OpenQuantRewriter : CSharpSyntaxRewriter
     {
-        private static readonly string[] BarDataItems = { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
+        private static readonly HashSet<string> BarDataItems = new HashSet<string> { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
         private readonly HashSet<string> _paramsAdded = new HashSet<string>();
+        private bool _hasBarData;
 
         private static bool IsDoubleArray(ParameterSyntax p)
         {
@@ -23,7 +24,7 @@ namespace TAParser
         private static bool IsBarData(ParameterSyntax p)
         {
             var name = p.Identifier.Text;
-            return Array.IndexOf(BarDataItems, name) >= 0;
+            return BarDataItems.Contains(name);
         }
 
         private static bool IsInReal(ParameterSyntax p)
@@ -40,10 +41,13 @@ namespace TAParser
 
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            if (_paramsAdded.Contains(node.Expression.ToString())) {
-                //node.ArgumentList
+            const string ArrayCopy = "Array.Copy(inReal";
+            const string SeriesCopy = "SeriesCopy(inReal";
+
+            var code = node.ToString();
+            if (code.StartsWith(ArrayCopy)) {
+                return SyntaxFactory.ParseExpression(node.ToFullString().Replace(ArrayCopy, SeriesCopy));
             }
-            //SyntaxFactory.ParseExpression()
             return base.VisitInvocationExpression(node);
         }
 
@@ -51,7 +55,7 @@ namespace TAParser
         {
             if (node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
                 var paramList = new StringBuilder();
-                var hasBarData = false;
+                _hasBarData = false;
 
                 foreach (var parameter in node.Parameters) {
                     if (paramList.Length > 0) {
@@ -59,7 +63,7 @@ namespace TAParser
                     }
                     if (IsDoubleArray(parameter) && IsInParameter(parameter)) {
                         if (IsBarData(parameter)) {
-                            hasBarData = true;
+                            _hasBarData = true;
                         }
                         else if (IsInReal(parameter)) {
                             paramList.Append($"SmartQuant.ISeries {parameter.Identifier.Text}");
@@ -69,8 +73,7 @@ namespace TAParser
                     paramList.Append(parameter.ToString());
                 }
 
-                if (hasBarData) {
-                    _paramsAdded.Add(((MethodDeclarationSyntax)node.Parent).Identifier.Text);
+                if (_hasBarData) {
                     paramList.Append($",SmartQuant.ISeries inBar");
                 }
 
@@ -81,6 +84,11 @@ namespace TAParser
 
         public override SyntaxNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
+            var exp = node.Expression.ToString();
+            if (BarDataItems.Contains(exp)) {
+                var args = node.ArgumentList.ToString().Replace("]", $",SmartQuant.BarData.{exp.Substring(2)}]");
+                return SyntaxFactory.ParseExpression($"inBar{args}");
+            }
             return base.VisitElementAccessExpression(node);
         }
 
