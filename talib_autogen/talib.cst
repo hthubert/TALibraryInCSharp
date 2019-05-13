@@ -7,6 +7,7 @@ Description:
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Linq" %>
 <%@ Import Namespace="System.Text" %>
 <%@ Import Namespace="System.Xml.Serialization" %>
 
@@ -226,7 +227,7 @@ public string GetIndicatorOption(FinancialFunction func) {
             if (line.Length > 0) line.Append(",");
             line.Append("{" + GetOptionName(o) + "}");
         }
-        line.Insert(0,"(");
+        line.Insert(0, "(");
         line.Append(")");
         return line.ToString();
     }
@@ -247,17 +248,44 @@ public string GetConstructorArgs(FinancialFunction func) {
     return line.ToString();
 }
 
-public string GetOutputName(OutputArgument o){
-    return o.Name.Replace("out","");
+public string GetOutputName(OutputArgument o) {
+    return o.Name.Replace("out", "");
 }
 public string GetOutputType(OutputArgument o) {
     return o.Type == "Double Array" ? "double" : "int";
 }
-public string GetTaCallInput(FinancialFunction func){
-
+public string GetTaCallInput(FinancialFunction func) {
+    var line = new StringBuilder();
+    var inputs = func.RequiredInputArguments.RequiredInputArgument;
+    if (inputs.Any(n => BarDataItems.Contains(n.Name))) {
+        foreach (var i in inputs) {
+            line.Append(", In" + i.Name);
+        }
+    }
+    else {
+        line.Append(", input");
+        if (inputs.Count > 1)
+            line.Append(", _input2");
+    }
+    if (func.OptionalInputArguments != null){
+        var options = func.OptionalInputArguments.OptionalInputArgument;
+        foreach(var oi in options){
+            line.Append(", " + GetOptionName(oi));
+        }
+    }
+    return line.ToString();
 }
-public string GetTaCallOutput(FinancialFunction func){
-
+public string GetTaCallOutput(FinancialFunction func) {
+    var line = new StringBuilder();
+    var outputs = func.OutputArguments.OutputArgument;
+    foreach(var o in outputs){
+        line.Append(", _" + GetOutputName(o));
+    }
+    var inputs = func.RequiredInputArguments.RequiredInputArgument;
+    if (inputs.Any(n => BarDataItems.Contains(n.Name))) {
+        line.Append(", input");
+    }
+    return line.ToString();
 }
 </script>
 <%
@@ -307,8 +335,8 @@ foreach(var func in funcs.FinancialFunction)
         {
             var outBegIdx = 0;
             var outNBElement = 0;
-            var ret = TaLib.Core.<%=func.CamelCaseName%>(index, index, InHigh, InLow, TimePeriod,
-                ref outBegIdx, ref outNBElement, down, up, input);
+            var ret = TaLib.Core.<%=func.CamelCaseName%>(index, index<%=GetTaCallInput(func)%>,
+                ref outBegIdx, ref outNBElement<%=GetTaCallOutput(func)%>);
             if (ret == TaLib.Core.RetCode.Success && outNBElement > 0) {
                 var datetime = input.GetDateTime(index);
             <%for(var i = 0; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
