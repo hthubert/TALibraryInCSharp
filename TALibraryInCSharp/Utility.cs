@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TALibrary
+namespace TaLib
 {
     public partial class Core
     {
         private static void SeriesCopy(SmartQuant.ISeries source, long sourceIndex, Array destinationArray, long destinationIndex, long length)
         {
-            //source[0, SmartQuant.BarData.Volume]
+            for (var i = 0; i < length; i++) {
+                destinationArray.SetValue(source[i + (int)sourceIndex], i + destinationIndex);
+            }
         }
     }
 }

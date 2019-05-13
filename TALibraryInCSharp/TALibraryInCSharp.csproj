@@ -8,8 +8,8 @@
     <ProjectGuid>{C2671CB2-5A5A-49D6-9C43-E2F1F6A13F27}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TALibrary</RootNamespace>
-    <AssemblyName>TALibraryInCSharp</AssemblyName>
+    <RootNamespace>TaLib</RootNamespace>
+    <AssemblyName>TaLibInCSharp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

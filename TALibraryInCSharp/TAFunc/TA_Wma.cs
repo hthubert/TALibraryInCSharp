@@ -1,5 +1,5 @@
 using System;
-namespace TALibrary
+namespace TaLib
 {
     public partial class Core
     {

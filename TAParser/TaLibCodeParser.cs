@@ -90,7 +90,7 @@ namespace TAParser
         {
             using (var writer = new StreamWriter(path)) {
                 writer.WriteLine("using System;");
-                writer.WriteLine("namespace TALibrary");
+                writer.WriteLine("namespace TaLib");
                 writer.WriteLine("{");
                 writer.WriteLine("public partial class Core");
                 writer.WriteLine("{");

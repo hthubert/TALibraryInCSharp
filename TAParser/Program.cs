@@ -1,97 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SmartQuant;
+using TaLib;
+using SearchOption = System.IO.SearchOption;
 
 namespace TAParser
 {
-    internal class Ta4OpenQuantRewriter : CSharpSyntaxRewriter
+    internal class TaAroon : SmartQuant.Indicator
     {
-        private static readonly HashSet<string> BarDataItems = new HashSet<string> { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
-        private readonly HashSet<string> _paramsAdded = new HashSet<string>();
-        private bool _hasBarData;
+        private static readonly double[] InHigh = { 0 };
+        private static readonly double[] InLow = { 0 };
 
-        private static bool IsDoubleArray(ParameterSyntax p)
+        public int TimePeriod { get; }
+        public SmartQuant.TimeSeries AroonUp { get; }
+
+        public TaAroon(SmartQuant.ISeries input, int timePeriod) : base(input)
         {
-            return p.Type.IsKind(SyntaxKind.ArrayType)
-                   && ((ArrayTypeSyntax)p.Type).ElementType.IsKind(SyntaxKind.PredefinedType)
-                   && ((PredefinedTypeSyntax)((ArrayTypeSyntax)p.Type).ElementType).Keyword.IsKind(SyntaxKind.DoubleKeyword);
+            AroonUp = new SmartQuant.TimeSeries();
+            TimePeriod = timePeriod;
+            Init();
         }
 
-        private static bool IsBarData(ParameterSyntax p)
+        protected override void Init()
         {
-            var name = p.Identifier.Text;
-            return BarDataItems.Contains(name);
+            name = $"TA_Lib Aroon ({TimePeriod})";
+            description = "TA_Lib Aroon";
+            Clear();
+            calculate = true;
         }
 
-        private static bool IsInReal(ParameterSyntax p)
+        public override void Calculate(int index)
         {
-            var name = p.Identifier.Text;
-            return name.StartsWith("inReal");
-        }
-
-        private static bool IsInParameter(ParameterSyntax p)
-        {
-            var name = p.Identifier.Text;
-            return name.StartsWith("in") || name == "startIdx" || name == "endIdx";
-        }
-
-        public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
-        {
-            const string ArrayCopy = "Array.Copy(inReal";
-            const string SeriesCopy = "SeriesCopy(inReal";
-
-            var code = node.ToString();
-            if (code.StartsWith(ArrayCopy)) {
-                return SyntaxFactory.ParseExpression(node.ToFullString().Replace(ArrayCopy, SeriesCopy));
-            }
-            return base.VisitInvocationExpression(node);
-        }
-
-        public override SyntaxNode VisitParameterList(ParameterListSyntax node)
-        {
-            if (node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
-                var paramList = new StringBuilder();
-                _hasBarData = false;
-
-                foreach (var parameter in node.Parameters) {
-                    if (paramList.Length > 0) {
-                        paramList.Append(",");
-                    }
-                    if (IsDoubleArray(parameter) && IsInParameter(parameter)) {
-                        if (IsBarData(parameter)) {
-                            _hasBarData = true;
-                        }
-                        else if (IsInReal(parameter)) {
-                            paramList.Append($"SmartQuant.ISeries {parameter.Identifier.Text}");
-                            continue;
-                        }
-                    }
-                    paramList.Append(parameter.ToString());
+            if (index >= TimePeriod) {
+                var outBegIdx = 0;
+                var outNBElement = 0;
+                var down = new double[1];
+                var up = new double[1];
+                var ret = TaLib.Core.Aroon(index, index, InHigh, InLow, TimePeriod,
+                    ref outBegIdx, ref outNBElement, down, up, input);
+                if (ret == TaLib.Core.RetCode.Success) {
+                    var datatime = input.GetDateTime(index);
+                    Add(datatime, down[0]);
+                    AroonUp.Add(datatime, up[0]);
                 }
-
-                if (_hasBarData) {
-                    paramList.Append($",SmartQuant.ISeries inBar");
-                }
-
-                return SyntaxFactory.ParseParameterList($"({paramList.ToString()})\r\n");
             }
-            return base.VisitParameterList(node);
         }
-
-        public override SyntaxNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
-        {
-            var exp = node.Expression.ToString();
-            if (BarDataItems.Contains(exp)) {
-                var args = node.ArgumentList.ToString().Replace("]", $",SmartQuant.BarData.{exp.Substring(2)}]");
-                return SyntaxFactory.ParseExpression($"inBar{args}");
-            }
-            return base.VisitElementAccessExpression(node);
-        }
-
     }
 
     class Program
@@ -100,12 +56,41 @@ namespace TAParser
         private const string Ta4OqFilePath = @"..\..\..\TALibraryInCSharp\TA4OpenQuant.cs";
         private const string FuncPath = @"..\..\..\TALibraryInCSharp\TAFunc";
 
-        static void Main(string[] args)
+        static Program()
         {
-            CreateTA4OpenQuant();
+            SmartQuant.OpenQuantOutside.Init();
         }
 
-        private static void CreateTA4OpenQuant()
+        static void Main(string[] args)
+        {
+            //CreateTa4OpenQuant();
+            //Ta4OqTest();
+            CreateTaIndicator();
+        }
+
+        private static void CreateTaIndicator()
+        {
+            var fs = File.Open("ta_func_api.xml", FileMode.Open);
+            using (var sr = new StreamReader(fs, Encoding.UTF8)) {
+                var xz = new XmlSerializer(typeof(FinancialFunctions));
+                var funcs = (FinancialFunctions)xz.Deserialize(sr);
+            }
+        }
+
+        private static void Ta4OqTest()
+        {
+            var framework = Framework.Current;
+            var inst = framework.InstrumentManager.Get("rb88");
+            var bars = framework.DataManager.GetHistoricalBars(inst, BarType.Time, 60);
+            var series = new BarSeries();
+            var aroon = new TaAroon(series, 12);
+            foreach (var bar in bars) {
+                series.Add(bar);
+            }
+            //var bar
+        }
+
+        private static void CreateTa4OpenQuant()
         {
             var coreCode = File.ReadAllText(CoreFilePath);
             var parser = new TaLibCodeParser();
