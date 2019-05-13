@@ -9,13 +9,16 @@ using SearchOption = System.IO.SearchOption;
 
 namespace TAParser
 {
-    internal class TaAroon : SmartQuant.Indicator
-    {
-        private static readonly double[] InHigh = { 0 };
-        private static readonly double[] InLow = { 0 };
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal class TaAroon : TaIndicator
+    {
         public int TimePeriod { get; }
         public SmartQuant.TimeSeries AroonUp { get; }
+        public SmartQuant.TimeSeries AroonDown => this;
 
         public TaAroon(SmartQuant.ISeries input, int timePeriod) : base(input)
         {
@@ -34,18 +37,16 @@ namespace TAParser
 
         public override void Calculate(int index)
         {
-            if (index >= TimePeriod) {
-                var outBegIdx = 0;
-                var outNBElement = 0;
-                var down = new double[1];
-                var up = new double[1];
-                var ret = TaLib.Core.Aroon(index, index, InHigh, InLow, TimePeriod,
-                    ref outBegIdx, ref outNBElement, down, up, input);
-                if (ret == TaLib.Core.RetCode.Success) {
-                    var datatime = input.GetDateTime(index);
-                    Add(datatime, down[0]);
-                    AroonUp.Add(datatime, up[0]);
-                }
+            var outBegIdx = 0;
+            var outNBElement = 0;
+            var down = new double[1];
+            var up = new double[1];
+            var ret = TaLib.Core.Aroon(index, index, InHigh, InLow, TimePeriod,
+                ref outBegIdx, ref outNBElement, down, up, input);
+            if (ret == TaLib.Core.RetCode.Success && outNBElement > 0) {
+                var datetime = input.GetDateTime(index);
+                Add(datetime, down[0]);
+                AroonUp.Add(datetime, up[0]);
             }
         }
     }
@@ -64,8 +65,8 @@ namespace TAParser
         static void Main(string[] args)
         {
             //CreateTa4OpenQuant();
-            //Ta4OqTest();
-            CreateTaIndicator();
+            Ta4OqTest();
+            //CreateTaIndicator();
         }
 
         private static void CreateTaIndicator()

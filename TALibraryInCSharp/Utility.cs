@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartQuant;
 
 namespace TaLib
 {
@@ -13,6 +14,19 @@ namespace TaLib
             for (var i = 0; i < length; i++) {
                 destinationArray.SetValue(source[i + (int)sourceIndex], i + destinationIndex);
             }
+        }
+    }
+
+    public abstract class TaIndicator : SmartQuant.Indicator
+    {   
+        protected static readonly double[] InOpen = { 0 };
+        protected static readonly double[] InClose = { 0 };
+        protected static readonly double[] InHigh = { 0 };
+        protected static readonly double[] InLow = { 0 };
+        protected static readonly double[] InVolumn = { 0 };
+
+        protected TaIndicator(ISeries input) : base(input)
+        {
         }
     }
 }

@@ -570,7 +570,7 @@
 				<DefaultValue>5</DefaultValue>
 			</OptionalInputArgument>
 			<OptionalInputArgument>
-				<Name>Deviations up</Name>
+				<Name>Deviations Up</Name>
 				<ShortDescription>Deviation multiplier for upper band</ShortDescription>
 				<Type>Double</Type>
 				<Range>
@@ -584,7 +584,7 @@
 				<DefaultValue>2.000000e+0</DefaultValue>
 			</OptionalInputArgument>
 			<OptionalInputArgument>
-				<Name>Deviations down</Name>
+				<Name>Deviations Down</Name>
 				<ShortDescription>Deviation multiplier for lower band</ShortDescription>
 				<Type>Double</Type>
 				<Range>
