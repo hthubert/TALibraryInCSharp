@@ -44,6 +44,7 @@ namespace TAParser
             var bars = framework.DataManager.GetHistoricalBars(inst, BarType.Time, 60);
             var series = new BarSeries();
             var aroon = new TaAroon(series);
+            var cdl2crows = new TaCdl2Crows(series);
             foreach (var bar in bars) {
                 series.Add(bar);
             }
