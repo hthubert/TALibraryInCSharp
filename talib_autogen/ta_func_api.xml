@@ -5104,7 +5104,7 @@
 		<RequiredInputArguments>
 			<RequiredInputArgument>
 				<Type>Double Array</Type>
-				<Name>inReal</Name>
+				<Name>Close</Name>
 			</RequiredInputArgument>
 			<RequiredInputArgument>
 				<Type>Volume</Type>

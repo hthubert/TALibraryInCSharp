@@ -3,7 +3,7 @@ namespace TaLib
 {
     public partial class Core
     {
-        public static RetCode Obv(int startIdx, int endIdx, double[] inReal, double[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Obv(int startIdx, int endIdx, double[] inClose, double[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -11,7 +11,7 @@ namespace TaLib
             if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null) {
+            if (inClose == null) {
                 return RetCode.BadParam;
             }
             if (inVolume == null) {
@@ -21,10 +21,10 @@ namespace TaLib
                 return RetCode.BadParam;
             }
             double prevOBV = inVolume[startIdx];
-            double prevReal = inReal[startIdx];
+            double prevReal = inClose[startIdx];
             int outIdx = 0;
             for (int i = startIdx; i <= endIdx; i++) {
-                double tempReal = inReal[i];
+                double tempReal = inClose[i];
                 if (tempReal > prevReal) {
                     prevOBV += inVolume[i];
                 }
@@ -39,7 +39,7 @@ namespace TaLib
             outNBElement = outIdx;
             return RetCode.Success;
         }
-        public static RetCode Obv(int startIdx, int endIdx, float[] inReal, float[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
+        public static RetCode Obv(int startIdx, int endIdx, float[] inClose, float[] inVolume, ref int outBegIdx, ref int outNBElement, double[] outReal)
         {
             if (startIdx < 0) {
                 return RetCode.OutOfRangeStartIndex;
@@ -47,7 +47,7 @@ namespace TaLib
             if ((endIdx < 0) || (endIdx < startIdx)) {
                 return RetCode.OutOfRangeEndIndex;
             }
-            if (inReal == null) {
+            if (inClose == null) {
                 return RetCode.BadParam;
             }
             if (inVolume == null) {
@@ -57,10 +57,10 @@ namespace TaLib
                 return RetCode.BadParam;
             }
             double prevOBV = inVolume[startIdx];
-            double prevReal = inReal[startIdx];
+            double prevReal = inClose[startIdx];
             int outIdx = 0;
             for (int i = startIdx; i <= endIdx; i++) {
-                double tempReal = inReal[i];
+                double tempReal = inClose[i];
                 if (tempReal > prevReal) {
                     prevOBV += inVolume[i];
                 }

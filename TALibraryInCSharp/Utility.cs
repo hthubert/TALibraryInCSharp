@@ -23,7 +23,7 @@ namespace TaLib
         protected static readonly double[] InClose = { 0 };
         protected static readonly double[] InHigh = { 0 };
         protected static readonly double[] InLow = { 0 };
-        protected static readonly double[] InVolumn = { 0 };
+        protected static readonly double[] InVolume = { 0 };
 
         protected TaIndicator(ISeries input) : base(input)
         {

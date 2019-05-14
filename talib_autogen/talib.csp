@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<codeSmith xmlns="http://www.codesmithtools.com/schema/csp.xsd">
+  <propertySets>
+    <propertySet name="talib" output="..\TALibraryInCSharp\TaIndicators.cs" template="talib.cst" />
+  </propertySets>
+</codeSmith>

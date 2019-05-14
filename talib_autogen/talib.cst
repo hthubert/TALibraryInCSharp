@@ -254,7 +254,7 @@ public string GetOutputName(OutputArgument o) {
 public string GetOutputType(OutputArgument o) {
     return o.Type == "Double Array" ? "double" : "int";
 }
-public string GetTaCallInput(FinancialFunction func) {
+public string GetTaCallInput(FinancialFunction func, bool camelCaseName = false) {
     var line = new StringBuilder();
     var inputs = func.RequiredInputArguments.RequiredInputArgument;
     if (inputs.Any(n => BarDataItems.Contains(n.Name))) {
@@ -265,12 +265,12 @@ public string GetTaCallInput(FinancialFunction func) {
     else {
         line.Append(", input");
         if (inputs.Count > 1)
-            line.Append(", _input2");
+            line.Append(", " + (camelCaseName ? "input2" : "_input2"));
     }
     if (func.OptionalInputArguments != null){
         var options = func.OptionalInputArguments.OptionalInputArgument;
         foreach(var oi in options){
-            line.Append(", " + GetOptionName(oi));
+            line.Append(", " + (camelCaseName ? GetOptionCamelCaseName(oi) : GetOptionName(oi)));
         }
     }
     return line.ToString();
@@ -286,6 +286,63 @@ public string GetTaCallOutput(FinancialFunction func) {
         line.Append(", input");
     }
     return line.ToString();
+}
+
+public string GetValueReturnType(FinancialFunction func)
+{
+    var outputs = func.OutputArguments.OutputArgument;
+    if (outputs.Count == 1){
+        return GetOutputType(outputs[0]);
+    }
+    else{
+        var line = new StringBuilder();
+        foreach(var o in outputs){
+            if (line.Length > 0) line.Append(", ");
+            line.Append(GetOutputType(o));
+        }
+        line.Insert(0,"(");
+        line.Append(")");
+        return line.ToString();
+    }
+}
+
+public string GetValueReturn(FinancialFunction func){
+    var outputs = func.OutputArguments.OutputArgument;
+    if (outputs.Count == 1){
+        return $"_{GetOutputName(outputs[0])}[0]";
+    }
+    else{
+        var line = new StringBuilder();
+        foreach(var o in outputs){
+            if (line.Length > 0) line.Append(", ");
+            line.Append($"_{GetOutputName(o)}[0]");
+        }
+        line.Insert(0,"(");
+        line.Append(")");
+        return line.ToString();
+    }
+
+}
+
+public string GetDefault(string type){
+    return type == "double" ? "double.NaN" : "-1";
+}
+
+public string GetValueReturnDefault(FinancialFunction func){
+    var outputs = func.OutputArguments.OutputArgument;
+    if (outputs.Count == 1){
+        return GetDefault(GetOutputType(outputs[0]));
+    }
+    else{
+        var line = new StringBuilder();
+        foreach(var o in outputs){
+            if (line.Length > 0) line.Append(", ");
+            line.Append(GetDefault(GetOutputType(o)));
+        }
+        line.Insert(0,"(");
+        line.Append(")");
+        return line.ToString();
+    }
 }
 </script>
 <%
@@ -307,7 +364,8 @@ foreach(var func in funcs.FinancialFunction)
     {
         <%if (HasSecondInput(func)) {%>private SmartQuant.ISeries _input2;<%}%>
         <%for(var i = 0; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
-        private readonly <%=GetOutputType(o)%>[] _<%=GetOutputName(o)%> = new <%=GetOutputType(o)%>[1];<%}%>
+        private readonly <%=GetOutputType(o)%>[] _<%=GetOutputName(o)%> = new <%=GetOutputType(o)%>[1];
+        <%}%>
         protected override void Init()
         {
             name = $"Ta<%=func.CamelCaseName%><%=GetIndicatorOption(func)%>";
@@ -320,17 +378,21 @@ foreach(var func in funcs.FinancialFunction)
         {
             <%if (HasSecondInput(func)) {%> _input2 = input2;<%}%>
             <%if (func.OptionalInputArguments != null){ foreach(var o in func.OptionalInputArguments.OptionalInputArgument){%>
-            <%=string.Format("{0} = {1};",GetOptionName(o), GetOptionCamelCaseName(o))%><%}}%>
+            <%=string.Format("{0} = {1};",GetOptionName(o), GetOptionCamelCaseName(o))%>
+            <%}}%>
             <%if (func.OutputArguments.OutputArgument.Count > 1){ for(var i = 1; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
-            <%=GetOutputName(o)%> = new SmartQuant.TimeSeries();<%}}%>
+            <%=GetOutputName(o)%> = new SmartQuant.TimeSeries();
+            <%}}%>
             Init();
         }
         
         <%if (func.OptionalInputArguments != null){ foreach(var o in func.OptionalInputArguments.OptionalInputArgument){%>
-        public <%=GetOptionType(o)%> <%=GetOptionName(o)%> { get;}<%}}%>
+        public <%=GetOptionType(o)%> <%=GetOptionName(o)%> { get;}
+        <%}}%>
         <%if (func.OutputArguments.OutputArgument.Count > 1){ for(var i = 0; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
         <%if (i == 0){%>public SmartQuant.TimeSeries <%=GetOutputName(o)%> => this;<% continue; }%>
-        public SmartQuant.TimeSeries <%=GetOutputName(o)%> { get; }<%}}%>
+        public SmartQuant.TimeSeries <%=GetOutputName(o)%> { get; }
+        <%}}%>
         public override void Calculate(int index)
         {
             var outBegIdx = 0;
@@ -340,12 +402,32 @@ foreach(var func in funcs.FinancialFunction)
             if (ret == TaLib.Core.RetCode.Success && outNBElement > 0) {
                 var datetime = input.GetDateTime(index);
             <%for(var i = 0; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
-                <%if (i == 0){%>Add(datetime,<%=GetOutputName(o)%>_[0]);<% continue; }%>
-                <%=GetOutputName(o)%>.Add(datetime, <%=GetOutputName(o)%>_[0]);<%}%>
+                <%if (i == 0){%>Add(datetime,_<%=GetOutputName(o)%>[0]);<% continue; }%>
+                <%=GetOutputName(o)%>.Add(datetime, _<%=GetOutputName(o)%>[0]);
+            <%}%>
             }
         }
+        
+        public static <%=GetValueReturnType(func)%> Value(SmartQuant.ISeries input, int index<%=GetConstructorArgs(func)%>)
+        {
+            var InOpen = new double[]{ 0 };
+            var InClose = new double[]{ 0 };
+            var InHigh = new double[]{ 0 };
+            var InLow = new double[]{ 0 };
+            var InVolume = new double[]{ 0 };
+            var outBegIdx = 0;
+            var outNBElement = 0;
+            <%for(var i = 0; i < func.OutputArguments.OutputArgument.Count; i++){ var o = func.OutputArguments.OutputArgument[i];%>
+            var _<%=GetOutputName(o)%> = new <%=GetOutputType(o)%>[1];
+            <%}%>
+            var ret = TaLib.Core.<%=func.CamelCaseName%>(index, index<%=GetTaCallInput(func, true)%>,
+                ref outBegIdx, ref outNBElement<%=GetTaCallOutput(func)%>);
+            if (ret == TaLib.Core.RetCode.Success && outNBElement > 0) {
+                return <%=GetValueReturn(func)%>;
+            }
+            return <%=GetValueReturnDefault(func)%>;
+        }
     }
-
 <%
 }
 %>

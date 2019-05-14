@@ -3,54 +3,13 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using QuantBox;
 using SmartQuant;
 using TaLib;
 using SearchOption = System.IO.SearchOption;
 
 namespace TAParser
 {
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    internal class TaAroon : TaIndicator
-    {
-        public int TimePeriod { get; }
-        public SmartQuant.TimeSeries AroonUp { get; }
-        public SmartQuant.TimeSeries AroonDown => this;
-
-        public TaAroon(SmartQuant.ISeries input, int timePeriod) : base(input)
-        {
-            AroonUp = new SmartQuant.TimeSeries();
-            TimePeriod = timePeriod;
-            Init();
-        }
-
-        protected override void Init()
-        {
-            name = $"TA_Lib Aroon ({TimePeriod})";
-            description = "TA_Lib Aroon";
-            Clear();
-            calculate = true;
-        }
-
-        public override void Calculate(int index)
-        {
-            var outBegIdx = 0;
-            var outNBElement = 0;
-            var down = new double[1];
-            var up = new double[1];
-            var ret = TaLib.Core.Aroon(index, index, InHigh, InLow, TimePeriod,
-                ref outBegIdx, ref outNBElement, down, up, input);
-            if (ret == TaLib.Core.RetCode.Success && outNBElement > 0) {
-                var datetime = input.GetDateTime(index);
-                Add(datetime, down[0]);
-                AroonUp.Add(datetime, up[0]);
-            }
-        }
-    }
-
     class Program
     {
         private const string CoreFilePath = @"..\..\..\TALibraryInCSharp\TACore.cs";
@@ -84,7 +43,7 @@ namespace TAParser
             var inst = framework.InstrumentManager.Get("rb88");
             var bars = framework.DataManager.GetHistoricalBars(inst, BarType.Time, 60);
             var series = new BarSeries();
-            var aroon = new TaAroon(series, 12);
+            var aroon = new TaAroon(series);
             foreach (var bar in bars) {
                 series.Add(bar);
             }
