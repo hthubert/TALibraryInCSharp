@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TALibraryInCSharp")]
+[assembly: AssemblyTitle("TaLib4OpenQuant")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HephaestusProject.Com")]
-[assembly: AssemblyProduct("TALibraryInCSharp")]
-[assembly: AssemblyCopyright("HephaestusProject.Com")]
+[assembly: AssemblyCompany("quantbox.cn")]
+[assembly: AssemblyProduct("TaLib4OpenQuant")]
+[assembly: AssemblyCopyright("quantbox.cn")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
