@@ -6983,11 +6983,11 @@ namespace QuantBox
             calculate = true;
         }
 
-        public TaSar(SmartQuant.ISeries input, double accelerationFactor = 2.000000e-2, double aFMaximum = 2.000000e-1) : base(input)
+        public TaSar(SmartQuant.ISeries input, double accelerationFactor = 2.000000e-2, double afMaximum = 2.000000e-1) : base(input)
         {
 
             AccelerationFactor = accelerationFactor;
-            AFMaximum = aFMaximum;
+            AFMaximum = afMaximum;
             Init();
         }
 
