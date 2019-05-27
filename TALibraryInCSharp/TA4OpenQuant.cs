@@ -1,8 +1,8 @@
 using System;
 namespace TaLib
 {
-    public partial class Core
-    {
+public partial class Core
+{
         private static RetCode TA_INT_EMA(int startIdx, int endIdx, SmartQuant.ISeries inReal_0, int optInTimePeriod_0, double optInK_1, ref int outBegIdx, ref int outNbElement, double[] outReal_0)
         {
             int today;
@@ -736,7 +736,7 @@ namespace TaLib
             if (adx == null) {
                 return RetCode.AllocErr;
             }
-            RetCode retCode = Adx(startIdx - (optInTimePeriod - 1), endIdx, inHigh, inLow, inClose, optInTimePeriod, ref outBegIdx, ref outNBElement, adx);
+            RetCode retCode = Adx(startIdx - (optInTimePeriod - 1), endIdx, inHigh, inLow, inClose, optInTimePeriod, ref outBegIdx, ref outNBElement, adx, inBar);
             if (retCode != RetCode.Success) {
                 return retCode;
             }
@@ -1065,10 +1065,10 @@ namespace TaLib
                 return RetCode.Success;
             }
             if (optInTimePeriod <= 1) {
-                return TrueRange(startIdx, endIdx, inHigh, inLow, inClose, ref outBegIdx, ref outNBElement, outReal);
+                return TrueRange(startIdx, endIdx, inHigh, inLow, inClose, ref outBegIdx, ref outNBElement, outReal, inBar);
             }
             double[] tempBuffer = new double[(lookbackTotal + (endIdx - startIdx)) + 1];
-            RetCode retCode = TrueRange((startIdx - lookbackTotal) + 1, endIdx, inHigh, inLow, inClose, ref outBegIdx1, ref outNbElement1, tempBuffer);
+            RetCode retCode = TrueRange((startIdx - lookbackTotal) + 1, endIdx, inHigh, inLow, inClose, ref outBegIdx1, ref outNbElement1, tempBuffer, inBar);
             if (retCode == RetCode.Success) {
                 retCode = TA_INT_SMA(optInTimePeriod - 1, optInTimePeriod - 1, tempBuffer, optInTimePeriod, ref outBegIdx1, ref outNbElement1, prevATRTemp);
                 if (retCode != RetCode.Success) {
@@ -31487,7 +31487,7 @@ namespace TaLib
                 int secondEMANbElement = 0;
                 int secondEMABegIdx = 0;
                 int firstEMABegIdx = 0;
-                if (inReal == outReal) {
+                if (/*inReal == outReal*/false) {
                     firstEMA = outReal;
                 }
                 else {
@@ -35848,10 +35848,10 @@ namespace TaLib
                 return RetCode.Success;
             }
             if (optInTimePeriod <= 1) {
-                return TrueRange(startIdx, endIdx, inHigh, inLow, inClose, ref outBegIdx, ref outNBElement, outReal);
+                return TrueRange(startIdx, endIdx, inHigh, inLow, inClose, ref outBegIdx, ref outNBElement, outReal, inBar);
             }
             double[] tempBuffer = new double[(lookbackTotal + (endIdx - startIdx)) + 1];
-            RetCode retCode = TrueRange((startIdx - lookbackTotal) + 1, endIdx, inHigh, inLow, inClose, ref outBegIdx1, ref outNbElement1, tempBuffer);
+            RetCode retCode = TrueRange((startIdx - lookbackTotal) + 1, endIdx, inHigh, inLow, inClose, ref outBegIdx1, ref outNbElement1, tempBuffer, inBar);
             if (retCode == RetCode.Success) {
                 retCode = TA_INT_SMA(optInTimePeriod - 1, optInTimePeriod - 1, tempBuffer, optInTimePeriod, ref outBegIdx1, ref outNbElement1, prevATRTemp);
                 if (retCode != RetCode.Success) {
@@ -36702,7 +36702,7 @@ namespace TaLib
                 optInAcceleration = optInMaximum;
                 af = optInAcceleration;
             }
-            RetCode retCode = MinusDM(startIdx, startIdx, inHigh, inLow, 1, ref tempInt, ref tempInt, ep_temp);
+            RetCode retCode = MinusDM(startIdx, startIdx, inHigh, inLow, 1, ref tempInt, ref tempInt, ep_temp, inBar);
             if (ep_temp[0] > 0.0) {
                 isLong = 0;
             }
@@ -36911,7 +36911,7 @@ namespace TaLib
             }
             if (optInStartValue == 0.0) {
                 int tempInt = 0;
-                RetCode retCode = MinusDM(startIdx, startIdx, inHigh, inLow, 1, ref tempInt, ref tempInt, ep_temp);
+                RetCode retCode = MinusDM(startIdx, startIdx, inHigh, inLow, 1, ref tempInt, ref tempInt, ep_temp, inBar);
                 if (ep_temp[0] > 0.0) {
                     isLong = 0;
                 }
@@ -38735,5 +38735,5 @@ namespace TaLib
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-    }
+}
 }

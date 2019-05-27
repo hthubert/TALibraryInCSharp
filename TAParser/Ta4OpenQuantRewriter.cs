@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -38,6 +39,15 @@ namespace TAParser
             return name.StartsWith("in") || name == "startIdx" || name == "endIdx";
         }
 
+        private static string ReplaceLastOccurrence(string source, string find, string replace)
+        {
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
+            if (place == -1)
+                return source;
+            var result = source.Remove(place, find.Length).Insert(place, replace);
+            return result;
+        }
+
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             const string arrayCopy = "Array.Copy(inReal";
@@ -45,7 +55,7 @@ namespace TAParser
             if (_rewriteInternalCall) {
                 if (node.ArgumentList.Arguments.Any(n => BarDataItems.Contains(n.Expression.ToString()))) {
                     var list = node.ToFullString();
-                    return SyntaxFactory.ParseExpression(list.Replace(")", ", inBar)"));
+                    return SyntaxFactory.ParseExpression(ReplaceLastOccurrence(list, ")", ", inBar)"));
                 }
             }
             else {
