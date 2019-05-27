@@ -18,7 +18,7 @@ namespace TaLib
     }
 
     public abstract class TaIndicator : SmartQuant.Indicator
-    {   
+    {
         protected static readonly double[] InOpen = { 0 };
         protected static readonly double[] InClose = { 0 };
         protected static readonly double[] InHigh = { 0 };

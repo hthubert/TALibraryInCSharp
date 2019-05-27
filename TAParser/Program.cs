@@ -3,9 +3,6 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using QuantBox;
-using SmartQuant;
-using TaLib;
 using SearchOption = System.IO.SearchOption;
 
 namespace TAParser
@@ -16,39 +13,36 @@ namespace TAParser
         private const string Ta4OqFilePath = @"..\..\..\TALibraryInCSharp\TA4OpenQuant.cs";
         private const string FuncPath = @"..\..\..\TALibraryInCSharp\TAFunc";
 
-        static Program()
-        {
-            SmartQuant.OpenQuantOutside.Init();
-        }
-
         static void Main(string[] args)
         {
             //CreateTa4OpenQuant();
-            Ta4OqTest();
+            //Ta4OqTest();
             //CreateTaIndicator();
+            RewriteInternalCall();
+        }
+
+        private static void RewriteInternalCall()
+        {
+            var coreCode = File.ReadAllText(Ta4OqFilePath);
+            var parser = new TaLibCodeParser();
+            parser.Scan(coreCode);
+            var rewriter = new Ta4OpenQuantRewriter();
+            var list = new List<MethodDeclarationSyntax>();
+            foreach (var member in parser.MethodMembers) {
+                list.Add(rewriter.RewriteInternalCall(member));
+            }
+            parser.MethodMembers.Clear();
+            parser.MethodMembers.AddRange(list);
+            parser.Save(Ta4OqFilePath);
         }
 
         private static void CreateTaIndicator()
         {
             var fs = File.Open("ta_func_api.xml", FileMode.Open);
-            using (var sr = new StreamReader(fs, Encoding.UTF8)) {
-                var xz = new XmlSerializer(typeof(FinancialFunctions));
-                var funcs = (FinancialFunctions)xz.Deserialize(sr);
-            }
-        }
-
-        private static void Ta4OqTest()
-        {
-            var framework = Framework.Current;
-            var inst = framework.InstrumentManager.Get("rb88");
-            var bars = framework.DataManager.GetHistoricalBars(inst, BarType.Time, 60);
-            var series = new BarSeries();
-            var aroon = new TaAroon(series);
-            var cdl2crows = new TaCdl2Crows(series);
-            foreach (var bar in bars) {
-                series.Add(bar);
-            }
-            //var bar
+            //using (var sr = new StreamReader(fs, Encoding.UTF8)) {
+            //    var xz = new XmlSerializer(typeof(FinancialFunctions));
+            //    var funcs = (FinancialFunctions)xz.Deserialize(sr);
+            //}
         }
 
         private static void CreateTa4OpenQuant()

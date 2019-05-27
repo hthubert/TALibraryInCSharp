@@ -1172,15 +1172,15 @@ public partial class Core
             if (outRealLowerBand == null) {
                 return RetCode.BadParam;
             }
-            if (/*inReal == outRealUpperBand*/false) {
+            if (inReal == outRealUpperBand) {
                 tempBuffer1 = outRealMiddleBand;
                 tempBuffer2 = outRealLowerBand;
             }
-            else if (/*inReal == outRealLowerBand*/false) {
+            else if (inReal == outRealLowerBand) {
                 tempBuffer1 = outRealMiddleBand;
                 tempBuffer2 = outRealUpperBand;
             }
-            else if (/*inReal == outRealMiddleBand*/false) {
+            else if (inReal == outRealMiddleBand) {
                 tempBuffer1 = outRealLowerBand;
                 tempBuffer2 = outRealUpperBand;
             }
@@ -1188,7 +1188,7 @@ public partial class Core
                 tempBuffer1 = outRealMiddleBand;
                 tempBuffer2 = outRealUpperBand;
             }
-            if (/*(tempBuffer1 == inReal) || (tempBuffer2 == inReal)*/false) {
+            if ((tempBuffer1 == inReal) || (tempBuffer2 == inReal)) {
                 return RetCode.BadParam;
             }
             RetCode retCode = MovingAverage(startIdx, endIdx, inReal, optInTimePeriod, optInMAType, ref outBegIdx, ref outNBElement, tempBuffer1);
@@ -31487,7 +31487,7 @@ public partial class Core
                 int secondEMANbElement = 0;
                 int secondEMABegIdx = 0;
                 int firstEMABegIdx = 0;
-                if (/*inReal == outReal*/false) {
+                if (inReal == outReal) {
                     firstEMA = outReal;
                 }
                 else {
@@ -35695,7 +35695,7 @@ public partial class Core
             outBegIdx = startIdx;
             return RetCode.Success;
         }
-        public static RetCode MovingAverageVariablePeriod(int startIdx,int endIdx,SmartQuant.ISeries inReal,SmartQuant.ISeries inPeriods,int optInMinPeriod,int optInMaxPeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
+        public static RetCode MovingAverageVariablePeriod(int startIdx,int endIdx,SmartQuant.ISeries inReal,double[] inPeriods,int optInMinPeriod,int optInMaxPeriod,MAType optInMAType,ref int outBegIdx,ref int outNBElement,double[] outReal)
         {
             int i;
             int tempInt = 0;

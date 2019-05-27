@@ -3,14 +3,15 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
 
 namespace TAParser
 {
     internal class Ta4OpenQuantRewriter : CSharpSyntaxRewriter
     {
         private static readonly HashSet<string> BarDataItems = new HashSet<string> { "inHigh", "inLow", "inOpen", "inClose", "inVolume" };
-        private readonly HashSet<string> _paramsAdded = new HashSet<string>();
         private bool _hasBarData;
+        private bool _rewriteInternalCall;
 
         private static bool IsDoubleArray(ParameterSyntax p)
         {
@@ -39,19 +40,26 @@ namespace TAParser
 
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            const string ArrayCopy = "Array.Copy(inReal";
-            const string SeriesCopy = "SeriesCopy(inReal";
-
-            var code = node.ToString();
-            if (code.StartsWith(ArrayCopy)) {
-                return SyntaxFactory.ParseExpression(node.ToFullString().Replace(ArrayCopy, SeriesCopy));
+            const string arrayCopy = "Array.Copy(inReal";
+            const string seriesCopy = "SeriesCopy(inReal";
+            if (_rewriteInternalCall) {
+                if (node.ArgumentList.Arguments.Any(n => BarDataItems.Contains(n.Expression.ToString()))) {
+                    var list = node.ToFullString();
+                    return SyntaxFactory.ParseExpression(list.Replace(")", ", inBar)"));
+                }
+            }
+            else {
+                var code = node.ToString();
+                if (code.StartsWith(arrayCopy)) {
+                    return SyntaxFactory.ParseExpression(node.ToFullString().Replace(arrayCopy, seriesCopy));
+                }
             }
             return base.VisitInvocationExpression(node);
         }
 
         public override SyntaxNode VisitParameterList(ParameterListSyntax node)
         {
-            if (node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
+            if (!_rewriteInternalCall && node.Parameters.Count > 0 && IsInParameter(node.Parameters.First())) {
                 var paramList = new StringBuilder();
                 _hasBarData = false;
 
@@ -68,27 +76,42 @@ namespace TAParser
                             continue;
                         }
                     }
-                    paramList.Append(parameter.ToString());
+                    paramList.Append(parameter);
                 }
 
                 if (_hasBarData) {
                     paramList.Append($",SmartQuant.ISeries inBar");
                 }
 
-                return SyntaxFactory.ParseParameterList($"({paramList.ToString()})\r\n");
+                return SyntaxFactory.ParseParameterList($"({paramList})\r\n");
             }
             return base.VisitParameterList(node);
         }
 
         public override SyntaxNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
-            var exp = node.Expression.ToString();
-            if (BarDataItems.Contains(exp)) {
-                var args = node.ArgumentList.ToString().Replace("]", $",SmartQuant.BarData.{exp.Substring(2)}]");
-                return SyntaxFactory.ParseExpression($"inBar{args}");
+            if (!_rewriteInternalCall) {
+                var exp = node.Expression.ToString();
+                if (BarDataItems.Contains(exp)) {
+                    var args = node.ArgumentList.ToString().Replace("]", $",SmartQuant.BarData.{exp.Substring(2)}]");
+                    return SyntaxFactory.ParseExpression($"inBar{args}");
+                }
             }
             return base.VisitElementAccessExpression(node);
         }
 
+        public MethodDeclarationSyntax RewriteInternalCall(MethodDeclarationSyntax method)
+        {
+            if (method.ParameterList.Parameters.Last().Identifier.Text != "inBar") {
+                return method;
+            }
+            _rewriteInternalCall = true;
+            try {
+                return (MethodDeclarationSyntax)Visit(method);
+            }
+            finally {
+                _rewriteInternalCall = false;
+            }
+        }
     }
 }
